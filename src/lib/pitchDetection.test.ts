@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   differenceFunction,
   cumulativeMeanNormalizedDifference,
+  findTauEstimate,
 } from "./pitchDetection";
 
 function generateSineWave(
@@ -90,5 +91,34 @@ describe("cumulativeMeanNormalizedDifference", () => {
 
     const period = Math.round(sampleRate / frequency);
     expect(quietCmndf[period]).toBeCloseTo(loudCmndf[period], 3);
+  });
+});
+
+describe("findTauEstimate", () => {
+  it("returns -1 when no value falls below the threshold", () => {
+    const cmndf = new Float32Array(100).fill(0.5);
+    expect(findTauEstimate(cmndf, 0.1)).toBe(-1);
+  });
+
+  it("finds the period τ for a 440Hz sine wave", () => {
+    const sampleRate = 44100;
+    const frequency = 440;
+    const buffer = generateSineWave(frequency, sampleRate, 2048);
+    const cmndf = cumulativeMeanNormalizedDifference(differenceFunction(buffer));
+
+    const tau = findTauEstimate(cmndf, 0.1);
+    const expectedPeriod = sampleRate / frequency;
+
+    expect(Math.abs(tau - expectedPeriod)).toBeLessThan(2);
+  });
+
+  it("follows the local minimum past the first threshold crossing", () => {
+    const cmndf = new Float32Array([1, 1, 0.8, 0.5, 0.3, 0.09, 0.05, 0.2, 0.4]);
+    expect(findTauEstimate(cmndf, 0.1)).toBe(6);
+  });
+
+  it("skips τ=0 and τ=1 even if below threshold", () => {
+    const cmndf = new Float32Array([0.01, 0.01, 0.5, 0.5, 0.05, 0.5]);
+    expect(findTauEstimate(cmndf, 0.1)).toBe(4);
   });
 });
