@@ -83,6 +83,14 @@ describe("frequencyToCents", () => {
       expect(cents).toBeLessThanOrEqual(50);
     }
   });
+
+  it("applies just intonation adjustment when temperament is 'just'", () => {
+    const e4Freq = 329.63;
+    const equalCents = frequencyToCents(e4Freq, { temperament: "equal" });
+    const justCents = frequencyToCents(e4Freq, { temperament: "just" });
+    expect(justCents).not.toBe(equalCents);
+    expect(justCents).toBeGreaterThan(equalCents);
+  });
 });
 
 describe("frequencyToOctave", () => {
