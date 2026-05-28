@@ -1,3 +1,9 @@
+import {
+  PITCH_DETECTION_THRESHOLD,
+  PITCH_MIN_FREQUENCY,
+  PITCH_MAX_FREQUENCY,
+} from "../constants/audio";
+
 /**
  Small d[τ] means τ is a candidate period.
 */
@@ -78,4 +84,30 @@ export function parabolicInterpolation(
   const s1 = cmndf[tauEstimate];
   const s2 = cmndf[x2];
   return tauEstimate + (s2 - s0) / (2 * (2 * s1 - s2 - s0));
+}
+
+/**
+ Run the full YIN pipeline on a buffer and return the detected frequency.
+ Returns -1 when no valid pitch is found or the frequency is out of range.
+*/
+export function detectPitchJS(
+  buffer: Float32Array,
+  sampleRate: number,
+): number {
+  const difference = differenceFunction(buffer);
+  const cmndf = cumulativeMeanNormalizedDifference(difference);
+  const tauEstimate = findTauEstimate(cmndf, PITCH_DETECTION_THRESHOLD);
+
+  if (tauEstimate === -1) {
+    return -1;
+  }
+
+  const refinedTau = parabolicInterpolation(cmndf, tauEstimate);
+  const frequency = sampleRate / refinedTau;
+
+  if (frequency < PITCH_MIN_FREQUENCY || frequency > PITCH_MAX_FREQUENCY) {
+    return -1;
+  }
+
+  return frequency;
 }
