@@ -1,6 +1,6 @@
-// YIN step 1: difference function
-// d[τ] = Σ (x[i] - x[i+τ])²
-// Small d[τ] means τ is a candidate period.
+/**
+ Small d[τ] means τ is a candidate period.
+*/
 export function differenceFunction(buffer: Float32Array): Float32Array {
   const halfBufferSize = Math.floor(buffer.length / 2);
   const difference = new Float32Array(halfBufferSize);
@@ -17,10 +17,10 @@ export function differenceFunction(buffer: Float32Array): Float32Array {
   return difference;
 }
 
-// YIN step 2: cumulative mean normalized difference function (CMNDF)
-// cmndf[τ] = d[τ] × τ / Σ d[1..τ]
-// Normalizes the difference function so a fixed threshold can be used
-// regardless of input amplitude. cmndf[0] is set to 1 by definition.
+/**
+ Normalizes the difference function so a fixed threshold can be used regardless of input amplitude.
+ cmndf[0] is set to 1 by definition.
+*/
 export function cumulativeMeanNormalizedDifference(
   difference: Float32Array,
 ): Float32Array {
@@ -34,4 +34,23 @@ export function cumulativeMeanNormalizedDifference(
   }
 
   return cmndf;
+}
+
+/**
+ Find the first τ where cmndf drops below the threshold, then follow it down to the local minimum to avoid stopping before the true period.
+ Returns -1 when no τ satisfies the threshold (no detectable pitch).
+*/
+export function findTauEstimate(
+  cmndf: Float32Array,
+  threshold: number,
+): number {
+  for (let tau = 2; tau < cmndf.length; tau++) {
+    if (cmndf[tau] < threshold) {
+      while (tau + 1 < cmndf.length && cmndf[tau + 1] < cmndf[tau]) {
+        tau++;
+      }
+      return tau;
+    }
+  }
+  return -1;
 }
