@@ -25,3 +25,35 @@ export const TRANSPOSITION_SEMITONES: Record<Transposition, number> = {
   G: 5,
   A: 3,
 };
+
+/**
+ Current pitch reading from the audio pipeline
+ frequency / note are null when no pitch is detected
+*/
+export type PitchData = {
+  readonly frequency: number | null;
+  readonly note: string | null;
+  readonly cents: number;
+  readonly timestamp: number;
+};
+
+// One entry in the rolling pitch history
+export type PitchHistoryEntry = {
+  readonly frequency: number;
+  readonly timestamp: number;
+};
+
+// Volume level for one channel
+export type ChannelVolume = {
+  readonly rms: number;
+  readonly peak: number;
+  readonly db: number; // dBFS, normalized 0-1
+};
+
+// Volume data for stereo or mono input
+export type VolumeLevelData = {
+  readonly left: ChannelVolume;
+  readonly right: ChannelVolume;
+  readonly mono: ChannelVolume;
+  readonly isStereo: boolean;
+};
