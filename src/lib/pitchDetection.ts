@@ -54,3 +54,28 @@ export function findTauEstimate(
   }
   return -1;
 }
+
+/**
+ Refine the integer τ estimate to sub-sample precision by fitting a parabola through (τ-1, τ, τ+1) and returning its vertex.
+ Falls back to the smaller neighbor when τ sits on the array boundary.
+*/
+export function parabolicInterpolation(
+  cmndf: Float32Array,
+  tauEstimate: number,
+): number {
+  const x0 = tauEstimate < 1 ? tauEstimate : tauEstimate - 1;
+  const x2 =
+    tauEstimate + 1 < cmndf.length ? tauEstimate + 1 : tauEstimate;
+
+  if (x0 === tauEstimate) {
+    return cmndf[tauEstimate] <= cmndf[x2] ? tauEstimate : x2;
+  }
+  if (x2 === tauEstimate) {
+    return cmndf[tauEstimate] <= cmndf[x0] ? tauEstimate : x0;
+  }
+
+  const s0 = cmndf[x0];
+  const s1 = cmndf[tauEstimate];
+  const s2 = cmndf[x2];
+  return tauEstimate + (s2 - s0) / (2 * (2 * s1 - s2 - s0));
+}
