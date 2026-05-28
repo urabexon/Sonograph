@@ -16,3 +16,22 @@ export function differenceFunction(buffer: Float32Array): Float32Array {
 
   return difference;
 }
+
+// YIN step 2: cumulative mean normalized difference function (CMNDF)
+// cmndf[τ] = d[τ] × τ / Σ d[1..τ]
+// Normalizes the difference function so a fixed threshold can be used
+// regardless of input amplitude. cmndf[0] is set to 1 by definition.
+export function cumulativeMeanNormalizedDifference(
+  difference: Float32Array,
+): Float32Array {
+  const cmndf = new Float32Array(difference.length);
+  cmndf[0] = 1;
+  let runningSum = 0;
+
+  for (let tau = 1; tau < difference.length; tau++) {
+    runningSum += difference[tau];
+    cmndf[tau] = (difference[tau] * tau) / runningSum;
+  }
+
+  return cmndf;
+}
