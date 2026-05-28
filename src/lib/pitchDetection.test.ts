@@ -3,6 +3,7 @@ import {
   differenceFunction,
   cumulativeMeanNormalizedDifference,
   findTauEstimate,
+  parabolicInterpolation,
 } from "./pitchDetection";
 
 function generateSineWave(
@@ -120,5 +121,47 @@ describe("findTauEstimate", () => {
   it("skips τ=0 and τ=1 even if below threshold", () => {
     const cmndf = new Float32Array([0.01, 0.01, 0.5, 0.5, 0.05, 0.5]);
     expect(findTauEstimate(cmndf, 0.1)).toBe(4);
+  });
+});
+
+describe("parabolicInterpolation", () => {
+  it("returns a fractional τ near the integer estimate", () => {
+    // Symmetric parabola centered at index 5: vertex should be exactly 5
+    const cmndf = new Float32Array([1, 1, 1, 1, 0.5, 0.1, 0.5, 1, 1]);
+    expect(parabolicInterpolation(cmndf, 5)).toBeCloseTo(5, 5);
+  });
+
+  it("shifts τ toward the smaller neighbor (asymmetric parabola)", () => {
+    // s0=0.5, s1=0.1, s2=0.3 → vertex shifts toward s2 side (τ > tauEstimate)
+    const cmndf = new Float32Array([1, 1, 1, 1, 0.5, 0.1, 0.3, 1, 1]);
+    const refined = parabolicInterpolation(cmndf, 5);
+    expect(refined).toBeGreaterThan(5);
+    expect(refined).toBeLessThan(6);
+  });
+
+  it("improves frequency accuracy over integer τ for a 440Hz sine wave", () => {
+    const sampleRate = 44100;
+    const frequency = 440;
+    const buffer = generateSineWave(frequency, sampleRate, 2048);
+    const cmndf = cumulativeMeanNormalizedDifference(differenceFunction(buffer));
+    const tau = findTauEstimate(cmndf, 0.1);
+    const refinedTau = parabolicInterpolation(cmndf, tau);
+
+    const integerFreq = sampleRate / tau;
+    const refinedFreq = sampleRate / refinedTau;
+
+    expect(Math.abs(refinedFreq - frequency)).toBeLessThan(
+      Math.abs(integerFreq - frequency),
+    );
+  });
+
+  it("falls back to the τ itself when at the right boundary", () => {
+    const cmndf = new Float32Array([1, 1, 1, 0.5, 0.1]);
+    expect(parabolicInterpolation(cmndf, 4)).toBe(4);
+  });
+
+  it("falls back to the τ itself when at the left boundary", () => {
+    const cmndf = new Float32Array([0.1, 0.5, 1, 1, 1]);
+    expect(parabolicInterpolation(cmndf, 0)).toBe(0);
   });
 });
