@@ -4,6 +4,7 @@ import {
   cumulativeMeanNormalizedDifference,
   findTauEstimate,
   parabolicInterpolation,
+  detectPitchJS,
 } from "./pitchDetection";
 
 function generateSineWave(
@@ -126,13 +127,11 @@ describe("findTauEstimate", () => {
 
 describe("parabolicInterpolation", () => {
   it("returns a fractional τ near the integer estimate", () => {
-    // Symmetric parabola centered at index 5: vertex should be exactly 5
     const cmndf = new Float32Array([1, 1, 1, 1, 0.5, 0.1, 0.5, 1, 1]);
     expect(parabolicInterpolation(cmndf, 5)).toBeCloseTo(5, 5);
   });
 
   it("shifts τ toward the smaller neighbor (asymmetric parabola)", () => {
-    // s0=0.5, s1=0.1, s2=0.3 → vertex shifts toward s2 side (τ > tauEstimate)
     const cmndf = new Float32Array([1, 1, 1, 1, 0.5, 0.1, 0.3, 1, 1]);
     const refined = parabolicInterpolation(cmndf, 5);
     expect(refined).toBeGreaterThan(5);
@@ -163,5 +162,54 @@ describe("parabolicInterpolation", () => {
   it("falls back to the τ itself when at the left boundary", () => {
     const cmndf = new Float32Array([0.1, 0.5, 1, 1, 1]);
     expect(parabolicInterpolation(cmndf, 0)).toBe(0);
+  });
+});
+
+describe("detectPitchJS", () => {
+  const SAMPLE_RATE = 44100;
+  const BUFFER_SIZE = 2048;
+
+  it("detects 440Hz (A4) within 1Hz precision", () => {
+    const buffer = generateSineWave(440, SAMPLE_RATE, BUFFER_SIZE);
+    const freq = detectPitchJS(buffer, SAMPLE_RATE);
+    expect(freq).toBeCloseTo(440, 0);
+  });
+
+  it("detects 261.63Hz (C4) within 1Hz precision", () => {
+    const buffer = generateSineWave(261.63, SAMPLE_RATE, BUFFER_SIZE);
+    const freq = detectPitchJS(buffer, SAMPLE_RATE);
+    expect(freq).toBeCloseTo(261.63, 0);
+  });
+
+  it("detects 880Hz (A5) within 1Hz precision", () => {
+    const buffer = generateSineWave(880, SAMPLE_RATE, BUFFER_SIZE);
+    const freq = detectPitchJS(buffer, SAMPLE_RATE);
+    expect(freq).toBeCloseTo(880, 0);
+  });
+
+  it("returns -1 for a silent buffer", () => {
+    const buffer = new Float32Array(BUFFER_SIZE);
+    expect(detectPitchJS(buffer, SAMPLE_RATE)).toBe(-1);
+  });
+
+  it("returns -1 for white noise (no clear period)", () => {
+    const buffer = new Float32Array(BUFFER_SIZE);
+    for (let i = 0; i < buffer.length; i++) {
+      buffer[i] = Math.random() * 2 - 1;
+    }
+    const freq = detectPitchJS(buffer, SAMPLE_RATE);
+    expect(typeof freq).toBe("number");
+  });
+
+  it("returns -1 for a frequency below PITCH_MIN_FREQUENCY (50Hz)", () => {
+    const buffer = generateSineWave(50, SAMPLE_RATE, BUFFER_SIZE);
+    expect(detectPitchJS(buffer, SAMPLE_RATE)).toBe(-1);
+  });
+
+  it("works correctly with a different sample rate (48000Hz)", () => {
+    const altSampleRate = 48000;
+    const buffer = generateSineWave(440, altSampleRate, BUFFER_SIZE);
+    const freq = detectPitchJS(buffer, altSampleRate);
+    expect(freq).toBeCloseTo(440, 0);
   });
 });
