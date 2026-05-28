@@ -1,7 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { differenceFunction } from "./pitchDetection";
+import {
+  differenceFunction,
+  cumulativeMeanNormalizedDifference,
+} from "./pitchDetection";
 
-// Generate a sine wave for testing
 function generateSineWave(
   frequency: number,
   sampleRate: number,
@@ -33,10 +35,8 @@ describe("differenceFunction", () => {
     const buffer = generateSineWave(frequency, sampleRate, 2048);
     const result = differenceFunction(buffer);
 
-    // Expected period in samples: 44100 / 440 ≈ 100.23
     const expectedPeriod = Math.round(sampleRate / frequency);
 
-    // d[expectedPeriod] should be much smaller than d[expectedPeriod / 2]
     expect(result[expectedPeriod]).toBeLessThan(result[expectedPeriod / 2]);
   });
 
@@ -46,5 +46,49 @@ describe("differenceFunction", () => {
     for (const value of result) {
       expect(value).toBe(0);
     }
+  });
+});
+
+describe("cumulativeMeanNormalizedDifference", () => {
+  it("cmndf[0] is always 1 by definition", () => {
+    const buffer = generateSineWave(440, 44100, 2048);
+    const difference = differenceFunction(buffer);
+    const cmndf = cumulativeMeanNormalizedDifference(difference);
+    expect(cmndf[0]).toBe(1);
+  });
+
+  it("returns an array the same length as the input", () => {
+    const difference = new Float32Array(1024);
+    const cmndf = cumulativeMeanNormalizedDifference(difference);
+    expect(cmndf.length).toBe(1024);
+  });
+
+  it("drops well below threshold (0.1) near the true period", () => {
+    const sampleRate = 44100;
+    const frequency = 440;
+    const buffer = generateSineWave(frequency, sampleRate, 2048);
+    const difference = differenceFunction(buffer);
+    const cmndf = cumulativeMeanNormalizedDifference(difference);
+
+    const expectedPeriod = Math.round(sampleRate / frequency);
+    expect(cmndf[expectedPeriod]).toBeLessThan(0.1);
+  });
+
+  it("normalizes regardless of amplitude (loud vs quiet)", () => {
+    const sampleRate = 44100;
+    const frequency = 440;
+    const loud = generateSineWave(frequency, sampleRate, 2048);
+    const quiet = new Float32Array(loud.length);
+    for (let i = 0; i < loud.length; i++) quiet[i] = loud[i] * 0.01;
+
+    const loudCmndf = cumulativeMeanNormalizedDifference(
+      differenceFunction(loud),
+    );
+    const quietCmndf = cumulativeMeanNormalizedDifference(
+      differenceFunction(quiet),
+    );
+
+    const period = Math.round(sampleRate / frequency);
+    expect(quietCmndf[period]).toBeCloseTo(loudCmndf[period], 3);
   });
 });
