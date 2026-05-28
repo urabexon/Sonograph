@@ -159,9 +159,19 @@ describe("parabolicInterpolation", () => {
     expect(parabolicInterpolation(cmndf, 4)).toBe(4);
   });
 
+  it("falls back to the left neighbor at the right boundary when smaller", () => {
+    const cmndf = new Float32Array([1, 1, 1, 0.05, 0.1]);
+    expect(parabolicInterpolation(cmndf, 4)).toBe(3);
+  });
+
   it("falls back to the τ itself when at the left boundary", () => {
     const cmndf = new Float32Array([0.1, 0.5, 1, 1, 1]);
     expect(parabolicInterpolation(cmndf, 0)).toBe(0);
+  });
+
+  it("falls back to the right neighbor at the left boundary when smaller", () => {
+    const cmndf = new Float32Array([0.1, 0.05, 1, 1, 1]);
+    expect(parabolicInterpolation(cmndf, 0)).toBe(1);
   });
 });
 
