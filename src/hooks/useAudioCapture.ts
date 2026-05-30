@@ -14,6 +14,7 @@ import {
   PITCH_TIMEOUT_MS,
 } from "../constants/audio";
 import { detectPitchJS, getRMS } from "../lib/pitchDetection";
+import { calculateChannelVolume } from "../lib/volumeUtils";
 
 // ============================================================================
 // State
@@ -141,12 +142,20 @@ function updateState(partial: Partial<AudioCaptureState>): void {
 function processAudio(): void {
   if (!resources) return;
 
-  // Pull the latest waveform from the analyser.
+  // Pull the latest waveform from each analyser.
   resources.analyser.getFloatTimeDomainData(resources.dataArray);
+  resources.leftAnalyser.getFloatTimeDomainData(resources.leftDataArray);
+  resources.rightAnalyser.getFloatTimeDomainData(resources.rightDataArray);
 
-  // Snapshot the buffer — the analyser overwrites dataArray on the next frame.
+  // Snapshot the buffers — the analysers overwrite them on the next frame.
   const monoData = new Float32Array(resources.dataArray.length);
   monoData.set(resources.dataArray);
+
+  const leftData = new Float32Array(resources.leftDataArray.length);
+  leftData.set(resources.leftDataArray);
+
+  const rightData = new Float32Array(resources.rightDataArray.length);
+  rightData.set(resources.rightDataArray);
 
   const now = Date.now();
 
@@ -175,10 +184,20 @@ function processAudio(): void {
         }
       : { frequency: null, note: null, cents: 0, timestamp: now };
 
+  // Per-channel volume (stereo detection is added in the next step;
+  // for now isStereo stays false).
+  const volumeLevel: VolumeLevelData = {
+    left: calculateChannelVolume(leftData),
+    right: calculateChannelVolume(rightData),
+    mono: calculateChannelVolume(monoData),
+    isStereo: false,
+  };
+
   updateState({
     currentPitch,
     pitchHistory,
     pitchTimestamp: now,
+    volumeLevel,
   });
 
   resources.animationFrameId = requestAnimationFrame(processAudio);
