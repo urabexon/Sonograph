@@ -12,9 +12,10 @@ import {
   DEFAULT_SAMPLE_RATE,
   PITCH_HISTORY_DURATION_MS,
   PITCH_TIMEOUT_MS,
+  STEREO_CHECK_FRAMES,
 } from "../constants/audio";
 import { detectPitchJS, getRMS } from "../lib/pitchDetection";
-import { calculateChannelVolume } from "../lib/volumeUtils";
+import { calculateChannelVolume, checkIsStereo } from "../lib/volumeUtils";
 
 // ============================================================================
 // State
@@ -82,6 +83,21 @@ let noiseGateThreshold = DEFAULT_NOISE_GATE_THRESHOLD;
 // Rolling 30-second history of detected pitches. Module-level so the loop
 // can mutate it in O(1) per frame without going through state on every push.
 let pitchHistory: PitchHistoryEntry[] = [];
+
+/*
+  Stereo detection:
+  - decided once per stream, then cached
+  - null   → not yet decided (still checking)
+  - true   → confirmed stereo (latched)
+  - false  → confirmed mono   (latched)
+*/
+let isStereoDetected: boolean | null = null;
+let stereoCheckFrameCount = 0;
+
+function resetStereoDetection(): void {
+  isStereoDetected = null;
+  stereoCheckFrameCount = 0;
+}
 
 // Cached snapshot for useSyncExternalStore. The hook compares references,
 // so getSnapshot must return the same object when nothing has changed.
@@ -184,13 +200,24 @@ function processAudio(): void {
         }
       : { frequency: null, note: null, cents: 0, timestamp: now };
 
-  // Per-channel volume (stereo detection is added in the next step;
-  // for now isStereo stays false).
+  // Stereo detection: latch true on the first stereo frame, latch false after
+  // STEREO_CHECK_FRAMES frames with no stereo signal. Cached afterwards.
+  let isStereo = isStereoDetected ?? false;
+  if (isStereoDetected === null) {
+    stereoCheckFrameCount++;
+    if (checkIsStereo(leftData, rightData)) {
+      isStereoDetected = true;
+      isStereo = true;
+    } else if (stereoCheckFrameCount >= STEREO_CHECK_FRAMES) {
+      isStereoDetected = false;
+    }
+  }
+
   const volumeLevel: VolumeLevelData = {
     left: calculateChannelVolume(leftData),
     right: calculateChannelVolume(rightData),
     mono: calculateChannelVolume(monoData),
-    isStereo: false,
+    isStereo,
   };
 
   updateState({
@@ -256,8 +283,9 @@ async function startAudio(deviceId?: string): Promise<void> {
     animationFrameId: null,
   };
 
-  // Reset history for the new session.
+  // Reset history and stereo detection for the new session.
   pitchHistory = [];
+  resetStereoDetection();
 
   updateState({
     isActive: true,
