@@ -111,3 +111,15 @@ export function detectPitchJS(
 
   return frequency;
 }
+
+/**
+ Compute the root mean square of the buffer.
+ Used as a quick signal-energy check (noise gating) before running YIN.
+*/
+export function getRMS(buffer: Float32Array): number {
+  let sum = 0;
+  for (const value of buffer) {
+    sum += value * value;
+  }
+  return Math.sqrt(sum / buffer.length);
+}
