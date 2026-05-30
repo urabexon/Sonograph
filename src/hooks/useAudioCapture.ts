@@ -1,4 +1,4 @@
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 import type {
   PitchData,
   PitchHistoryEntry,
@@ -8,9 +8,10 @@ import {
   AUDIO_BUFFER_SIZE,
   ANALYSER_SMOOTHING_PITCH,
   ANALYSER_SMOOTHING_STEREO,
+  DEFAULT_NOISE_GATE_THRESHOLD,
   DEFAULT_SAMPLE_RATE,
 } from "../constants/audio";
-import { detectPitchJS } from "../lib/pitchDetection";
+import { detectPitchJS, getRMS } from "../lib/pitchDetection";
 
 // ============================================================================
 // State
@@ -71,6 +72,9 @@ type AudioResources = {
 };
 
 let resources: AudioResources | null = null;
+
+// Adjustable from UI via useNoiseGateEffect.
+let noiseGateThreshold = DEFAULT_NOISE_GATE_THRESHOLD;
 
 // Cached snapshot for useSyncExternalStore. The hook compares references,
 // so getSnapshot must return the same object when nothing has changed.
@@ -138,9 +142,11 @@ function processAudio(): void {
   const monoData = new Float32Array(resources.dataArray.length);
   monoData.set(resources.dataArray);
 
-  // Detect pitch (no noise gate yet — added in the next step).
-  const frequency = detectPitchJS(monoData, state.sampleRate);
+  // Skip pitch detection when signal energy is below the noise gate.
   const now = Date.now();
+  const rms = getRMS(monoData);
+  const frequency =
+    rms >= noiseGateThreshold ? detectPitchJS(monoData, state.sampleRate) : -1;
 
   const currentPitch: PitchData =
     frequency > 0
@@ -184,10 +190,7 @@ async function startAudio(deviceId?: string): Promise<void> {
   rightAnalyser.fftSize = AUDIO_BUFFER_SIZE;
   rightAnalyser.smoothingTimeConstant = ANALYSER_SMOOTHING_STEREO;
 
-  // Wire the audio graph:
-  //   source ──▶ analyser (mono)
-  //          └─▶ splitter ──▶ leftAnalyser
-  //                       └─▶ rightAnalyser
+  // Wire the audio
   const source = audioContext.createMediaStreamSource(stream);
   source.connect(analyser);
 
@@ -287,4 +290,13 @@ export function useAudioControls(): {
   );
   const stop = useCallback(() => stopAudio(), []);
   return { startAudio: start, stopAudio: stop };
+}
+
+// Apply a noise-gate threshold from the UI side.
+// Module-level variable since the value changes infrequently and is not
+// subscribed by useSyncExternalStore.
+export function useNoiseGateEffect(threshold: number): void {
+  useEffect(() => {
+    noiseGateThreshold = threshold;
+  }, [threshold]);
 }
