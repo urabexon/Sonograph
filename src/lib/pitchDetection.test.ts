@@ -5,6 +5,7 @@ import {
   findTauEstimate,
   parabolicInterpolation,
   detectPitchJS,
+  getRMS,
 } from "./pitchDetection";
 
 function generateSineWave(
@@ -221,5 +222,30 @@ describe("detectPitchJS", () => {
     const buffer = generateSineWave(440, altSampleRate, BUFFER_SIZE);
     const freq = detectPitchJS(buffer, altSampleRate);
     expect(freq).toBeCloseTo(440, 0);
+  });
+});
+
+describe("getRMS", () => {
+  it("returns 0 for a silent buffer", () => {
+    const buffer = new Float32Array(2048);
+    expect(getRMS(buffer)).toBe(0);
+  });
+
+  it("returns the constant value for a DC signal", () => {
+    const buffer = new Float32Array(2048).fill(0.5);
+    expect(getRMS(buffer)).toBeCloseTo(0.5);
+  });
+
+  it("returns ≈ 1/√2 for a full-amplitude sine wave", () => {
+    const buffer = generateSineWave(440, 44100, 2048);
+    expect(getRMS(buffer)).toBeCloseTo(1 / Math.sqrt(2), 1);
+  });
+
+  it("scales linearly with amplitude", () => {
+    const loud = generateSineWave(440, 44100, 2048);
+    const quiet = new Float32Array(loud.length);
+    for (let i = 0; i < loud.length; i++) quiet[i] = loud[i] * 0.1;
+
+    expect(getRMS(quiet)).toBeCloseTo(getRMS(loud) * 0.1, 3);
   });
 });
