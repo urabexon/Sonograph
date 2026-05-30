@@ -8,5 +8,11 @@
   "app": {
     "title": "Sonograph",
     "tagline": "ブラウザ上で動作するリアルタイムピッチ検出"
+  },
+  "theme": {
+    "toggle": "テーマを切り替え",
+    "light": "ライト",
+    "dark": "ダーク",
+    "system": "システム"
   }
 }

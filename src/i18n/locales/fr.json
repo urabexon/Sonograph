@@ -8,5 +8,11 @@
   "app": {
     "title": "Sonograph",
     "tagline": "Détection de hauteur en temps réel dans le navigateur"
+  },
+  "theme": {
+    "toggle": "Changer de thème",
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système"
   }
 }
