@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 import type {
   PitchData,
   PitchHistoryEntry,
@@ -48,6 +48,14 @@ const createInitialState = (): AudioCaptureState => ({
 
 let state: AudioCaptureState = createInitialState();
 
+// Audio resources (grows as more nodes are added in later steps)
+type AudioResources = {
+  audioContext: AudioContext;
+  stream: MediaStream;
+};
+
+let resources: AudioResources | null = null;
+
 // Cached snapshot for useSyncExternalStore. The hook compares references,
 // so getSnapshot must return the same object when nothing has changed.
 type PitchSnapshot = {
@@ -69,6 +77,76 @@ const isActiveListeners: ListenerSet = new Set();
 const pitchListeners: ListenerSet = new Set();
 const volumeListeners: ListenerSet = new Set();
 const streamListeners: ListenerSet = new Set();
+
+function notifyListeners(listeners: ListenerSet): void {
+  listeners.forEach((listener) => listener());
+}
+
+function updateState(partial: Partial<AudioCaptureState>): void {
+  const prev = state;
+  state = { ...state, ...partial };
+
+  if (partial.isActive !== undefined && partial.isActive !== prev.isActive) {
+    notifyListeners(isActiveListeners);
+  }
+  if (
+    partial.currentPitch !== undefined ||
+    partial.pitchHistory !== undefined ||
+    partial.pitchTimestamp !== undefined
+  ) {
+    pitchSnapshot = {
+      currentPitch: state.currentPitch,
+      pitchHistory: state.pitchHistory,
+    };
+    notifyListeners(pitchListeners);
+  }
+  if (partial.volumeLevel !== undefined) {
+    notifyListeners(volumeListeners);
+  }
+  if (partial.stream !== undefined) {
+    notifyListeners(streamListeners);
+  }
+}
+
+// ============================================================================
+// Audio Lifecycle (start / stop)
+// ============================================================================
+
+async function startAudio(deviceId?: string): Promise<void> {
+  // Disable all browser-side processing — we need the raw waveform.
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: {
+      deviceId: deviceId ? { exact: deviceId } : undefined,
+      echoCancellation: false,
+      noiseSuppression: false,
+      autoGainControl: false,
+      channelCount: 2,
+    },
+  });
+
+  const audioContext = new AudioContext();
+
+  resources = { audioContext, stream };
+
+  updateState({
+    isActive: true,
+    sampleRate: audioContext.sampleRate,
+    stream,
+  });
+}
+
+function stopAudio(): void {
+  if (!resources) return;
+
+  resources.stream.getTracks().forEach((track) => track.stop());
+  void resources.audioContext.close();
+  resources = null;
+
+  updateState({
+    isActive: false,
+    stream: null,
+  });
+}
 
 // ============================================================================
 // Subscribe Functions (called by useSyncExternalStore)
@@ -112,4 +190,16 @@ export function useVolumeLevelData(): VolumeLevelData {
 
 export function useAudioStream(): MediaStream | null {
   return useSyncExternalStore(subscribeStream, () => state.stream);
+}
+
+export function useAudioControls(): {
+  readonly startAudio: (deviceId?: string) => Promise<void>;
+  readonly stopAudio: () => void;
+} {
+  const start = useCallback(
+    (deviceId?: string): Promise<void> => startAudio(deviceId),
+    [],
+  );
+  const stop = useCallback(() => stopAudio(), []);
+  return { startAudio: start, stopAudio: stop };
 }
