@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { calculateChannelVolume } from "./volumeUtils";
+import { calculateChannelVolume, checkIsStereo } from "./volumeUtils";
 
 function generateSineWave(
   frequency: number,
@@ -50,5 +50,31 @@ describe("calculateChannelVolume", () => {
     const resultB = calculateChannelVolume(b);
 
     expect(resultA.dB - resultB.dB).toBeCloseTo(6, 0);
+  });
+});
+
+describe("checkIsStereo", () => {
+  it("returns false when L and R are identical (mono input duplicated)", () => {
+    const data = generateSineWave(440, 44100, 2048);
+    const copy = new Float32Array(data);
+    expect(checkIsStereo(data, copy)).toBe(false);
+  });
+
+  it("returns true when L and R differ significantly (true stereo)", () => {
+    const left = generateSineWave(440, 44100, 2048);
+    const right = generateSineWave(880, 44100, 2048);
+    expect(checkIsStereo(left, right)).toBe(true);
+  });
+
+  it("returns false when L/R differ by less than the detection threshold", () => {
+    const left = new Float32Array(2048).fill(0.5);
+    const right = new Float32Array(2048).fill(0.5001); // below threshold
+    expect(checkIsStereo(left, right)).toBe(false);
+  });
+
+  it("returns false for two silent buffers", () => {
+    const left = new Float32Array(2048);
+    const right = new Float32Array(2048);
+    expect(checkIsStereo(left, right)).toBe(false);
   });
 });
