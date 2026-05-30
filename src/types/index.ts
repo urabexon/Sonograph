@@ -46,8 +46,9 @@ export type PitchHistoryEntry = {
 // Volume level for one channel
 export type ChannelVolume = {
   readonly rms: number;
+  readonly dB: number; // current dBFS (-Infinity = silence, 0 = max)
   readonly peak: number;
-  readonly db: number; // dBFS, normalized 0-1
+  readonly peakDb: number; // peak dBFS in the recent window
 };
 
 // Volume data for stereo or mono input
