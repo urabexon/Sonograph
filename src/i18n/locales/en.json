@@ -1,0 +1,12 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "language": "Language"
+  },
+  "app": {
+    "title": "Sonograph",
+    "tagline": "Real-time pitch detection in the browser"
+  }
+}

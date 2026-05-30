@@ -1,0 +1,12 @@
+{
+  "common": {
+    "save": "保存",
+    "cancel": "キャンセル",
+    "close": "閉じる",
+    "language": "言語"
+  },
+  "app": {
+    "title": "Sonograph",
+    "tagline": "ブラウザ上で動作するリアルタイムピッチ検出"
+  }
+}

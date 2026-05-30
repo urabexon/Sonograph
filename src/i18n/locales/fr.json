@@ -1,0 +1,12 @@
+{
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "language": "Langue"
+  },
+  "app": {
+    "title": "Sonograph",
+    "tagline": "Détection de hauteur en temps réel dans le navigateur"
+  }
+}
