@@ -4,7 +4,12 @@ import type {
   PitchHistoryEntry,
   VolumeLevelData,
 } from "../types";
-import { DEFAULT_SAMPLE_RATE } from "../constants/audio";
+import {
+  AUDIO_BUFFER_SIZE,
+  ANALYSER_SMOOTHING_PITCH,
+  ANALYSER_SMOOTHING_STEREO,
+  DEFAULT_SAMPLE_RATE,
+} from "../constants/audio";
 
 // ============================================================================
 // State
@@ -48,10 +53,18 @@ const createInitialState = (): AudioCaptureState => ({
 
 let state: AudioCaptureState = createInitialState();
 
-// Audio resources (grows as more nodes are added in later steps)
+// Audio resources held by the active capture session.
 type AudioResources = {
   audioContext: AudioContext;
   stream: MediaStream;
+  // Mono analyser for pitch detection (smoothing=0, raw waveform)
+  analyser: AnalyserNode;
+  dataArray: Float32Array;
+  // Stereo analysers for L/R volume meters (smoothing=0.3, smoothed)
+  leftAnalyser: AnalyserNode;
+  leftDataArray: Float32Array;
+  rightAnalyser: AnalyserNode;
+  rightDataArray: Float32Array;
 };
 
 let resources: AudioResources | null = null;
@@ -126,7 +139,42 @@ async function startAudio(deviceId?: string): Promise<void> {
 
   const audioContext = new AudioContext();
 
-  resources = { audioContext, stream };
+  // Mono analyser for pitch detection (raw waveform)
+  const analyser = audioContext.createAnalyser();
+  analyser.fftSize = AUDIO_BUFFER_SIZE;
+  analyser.smoothingTimeConstant = ANALYSER_SMOOTHING_PITCH;
+
+  // L/R analysers for volume meters (smoothed)
+  const leftAnalyser = audioContext.createAnalyser();
+  leftAnalyser.fftSize = AUDIO_BUFFER_SIZE;
+  leftAnalyser.smoothingTimeConstant = ANALYSER_SMOOTHING_STEREO;
+
+  const rightAnalyser = audioContext.createAnalyser();
+  rightAnalyser.fftSize = AUDIO_BUFFER_SIZE;
+  rightAnalyser.smoothingTimeConstant = ANALYSER_SMOOTHING_STEREO;
+
+  // Wire the audio graph:
+  //   source ──▶ analyser (mono)
+  //          └─▶ splitter ──▶ leftAnalyser
+  //                       └─▶ rightAnalyser
+  const source = audioContext.createMediaStreamSource(stream);
+  source.connect(analyser);
+
+  const channelSplitter = audioContext.createChannelSplitter(2);
+  source.connect(channelSplitter);
+  channelSplitter.connect(leftAnalyser, 0);
+  channelSplitter.connect(rightAnalyser, 1);
+
+  resources = {
+    audioContext,
+    stream,
+    analyser,
+    dataArray: new Float32Array(analyser.fftSize),
+    leftAnalyser,
+    leftDataArray: new Float32Array(leftAnalyser.fftSize),
+    rightAnalyser,
+    rightDataArray: new Float32Array(rightAnalyser.fftSize),
+  };
 
   updateState({
     isActive: true,
