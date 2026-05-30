@@ -10,6 +10,8 @@ import {
   ANALYSER_SMOOTHING_STEREO,
   DEFAULT_NOISE_GATE_THRESHOLD,
   DEFAULT_SAMPLE_RATE,
+  PITCH_HISTORY_DURATION_MS,
+  PITCH_TIMEOUT_MS,
 } from "../constants/audio";
 import { detectPitchJS, getRMS } from "../lib/pitchDetection";
 
@@ -75,6 +77,10 @@ let resources: AudioResources | null = null;
 
 // Adjustable from UI via useNoiseGateEffect.
 let noiseGateThreshold = DEFAULT_NOISE_GATE_THRESHOLD;
+
+// Rolling 30-second history of detected pitches. Module-level so the loop
+// can mutate it in O(1) per frame without going through state on every push.
+let pitchHistory: PitchHistoryEntry[] = [];
 
 // Cached snapshot for useSyncExternalStore. The hook compares references,
 // so getSnapshot must return the same object when nothing has changed.
@@ -142,18 +148,38 @@ function processAudio(): void {
   const monoData = new Float32Array(resources.dataArray.length);
   monoData.set(resources.dataArray);
 
-  // Skip pitch detection when signal energy is below the noise gate.
   const now = Date.now();
-  const rms = getRMS(monoData);
-  const frequency =
-    rms >= noiseGateThreshold ? detectPitchJS(monoData, state.sampleRate) : -1;
 
+  // Detect pitch only when signal energy passes the noise gate.
+  const rms = getRMS(monoData);
+  if (rms >= noiseGateThreshold) {
+    const frequency = detectPitchJS(monoData, state.sampleRate);
+    if (frequency > 0) {
+      pitchHistory = [...pitchHistory, { frequency, timestamp: now }];
+    }
+  }
+
+  // Drop entries older than the rolling window
+  const cutoff = now - PITCH_HISTORY_DURATION_MS;
+  pitchHistory = pitchHistory.filter((entry) => entry.timestamp > cutoff);
+
+  // Show the latest pitch for up to PITCH_TIMEOUT_MS after detection
+  const lastEntry = pitchHistory[pitchHistory.length - 1];
   const currentPitch: PitchData =
-    frequency > 0
-      ? { frequency, note: null, cents: 0, timestamp: now }
+    lastEntry && now - lastEntry.timestamp < PITCH_TIMEOUT_MS
+      ? {
+          frequency: lastEntry.frequency,
+          note: null,
+          cents: 0,
+          timestamp: lastEntry.timestamp,
+        }
       : { frequency: null, note: null, cents: 0, timestamp: now };
 
-  updateState({ currentPitch });
+  updateState({
+    currentPitch,
+    pitchHistory,
+    pitchTimestamp: now,
+  });
 
   resources.animationFrameId = requestAnimationFrame(processAudio);
 }
@@ -211,10 +237,17 @@ async function startAudio(deviceId?: string): Promise<void> {
     animationFrameId: null,
   };
 
+  // Reset history for the new session.
+  pitchHistory = [];
+
   updateState({
     isActive: true,
     sampleRate: audioContext.sampleRate,
     stream,
+    currentPitch: DEFAULT_PITCH,
+    pitchHistory: [],
+    pitchTimestamp: Date.now(),
+    volumeLevel: DEFAULT_VOLUME,
   });
 
   processAudio();
@@ -229,10 +262,14 @@ function stopAudio(): void {
   resources.stream.getTracks().forEach((track) => track.stop());
   void resources.audioContext.close();
   resources = null;
+  pitchHistory = [];
 
   updateState({
     isActive: false,
     stream: null,
+    currentPitch: DEFAULT_PITCH,
+    pitchHistory: [],
+    volumeLevel: DEFAULT_VOLUME,
   });
 }
 
