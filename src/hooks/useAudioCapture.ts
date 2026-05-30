@@ -10,6 +10,7 @@ import {
   ANALYSER_SMOOTHING_STEREO,
   DEFAULT_SAMPLE_RATE,
 } from "../constants/audio";
+import { detectPitchJS } from "../lib/pitchDetection";
 
 // ============================================================================
 // State
@@ -57,14 +58,16 @@ let state: AudioCaptureState = createInitialState();
 type AudioResources = {
   audioContext: AudioContext;
   stream: MediaStream;
-  // Mono analyser for pitch detection (smoothing=0, raw waveform)
+  // Mono analyser for pitch detection
   analyser: AnalyserNode;
-  dataArray: Float32Array;
-  // Stereo analysers for L/R volume meters (smoothing=0.3, smoothed)
+  dataArray: Float32Array<ArrayBuffer>;
+  // Stereo analysers for L/R volume meters
   leftAnalyser: AnalyserNode;
-  leftDataArray: Float32Array;
+  leftDataArray: Float32Array<ArrayBuffer>;
   rightAnalyser: AnalyserNode;
-  rightDataArray: Float32Array;
+  rightDataArray: Float32Array<ArrayBuffer>;
+  // Handle for the running RAF loop
+  animationFrameId: number | null;
 };
 
 let resources: AudioResources | null = null;
@@ -122,6 +125,34 @@ function updateState(partial: Partial<AudioCaptureState>): void {
 }
 
 // ============================================================================
+// Audio Processing Loop
+// ============================================================================
+
+function processAudio(): void {
+  if (!resources) return;
+
+  // Pull the latest waveform from the analyser.
+  resources.analyser.getFloatTimeDomainData(resources.dataArray);
+
+  // Snapshot the buffer — the analyser overwrites dataArray on the next frame.
+  const monoData = new Float32Array(resources.dataArray.length);
+  monoData.set(resources.dataArray);
+
+  // Detect pitch (no noise gate yet — added in the next step).
+  const frequency = detectPitchJS(monoData, state.sampleRate);
+  const now = Date.now();
+
+  const currentPitch: PitchData =
+    frequency > 0
+      ? { frequency, note: null, cents: 0, timestamp: now }
+      : { frequency: null, note: null, cents: 0, timestamp: now };
+
+  updateState({ currentPitch });
+
+  resources.animationFrameId = requestAnimationFrame(processAudio);
+}
+
+// ============================================================================
 // Audio Lifecycle (start / stop)
 // ============================================================================
 
@@ -174,6 +205,7 @@ async function startAudio(deviceId?: string): Promise<void> {
     leftDataArray: new Float32Array(leftAnalyser.fftSize),
     rightAnalyser,
     rightDataArray: new Float32Array(rightAnalyser.fftSize),
+    animationFrameId: null,
   };
 
   updateState({
@@ -181,11 +213,16 @@ async function startAudio(deviceId?: string): Promise<void> {
     sampleRate: audioContext.sampleRate,
     stream,
   });
+
+  processAudio();
 }
 
 function stopAudio(): void {
   if (!resources) return;
 
+  if (resources.animationFrameId !== null) {
+    cancelAnimationFrame(resources.animationFrameId);
+  }
   resources.stream.getTracks().forEach((track) => track.stop());
   void resources.audioContext.close();
   resources = null;
