@@ -235,6 +235,9 @@ function processAudio(): void {
 // ============================================================================
 
 async function startAudio(deviceId?: string): Promise<void> {
+  // Hold the existing session so we can dispose of it after the new stream is up
+  const oldResources = resources;
+
   // Disable all browser-side processing — we need the raw waveform.
   const stream = await navigator.mediaDevices.getUserMedia({
     audio: {
@@ -245,6 +248,15 @@ async function startAudio(deviceId?: string): Promise<void> {
       channelCount: 2,
     },
   });
+
+  // Tear down the previous session now that we have a working new stream.
+  if (oldResources) {
+    if (oldResources.animationFrameId !== null) {
+      cancelAnimationFrame(oldResources.animationFrameId);
+    }
+    oldResources.stream.getTracks().forEach((track) => track.stop());
+    void oldResources.audioContext.close();
+  }
 
   const audioContext = new AudioContext();
 
