@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { PitchInfo } from "@/components/PitchInfo";
 import { StartOverlay } from "@/components/StartOverlay";
 import { ThemeProvider } from "@/components/theme-provider";
+import { TunerDisplay } from "@/components/TunerDisplay";
 import { VolumeLevel } from "@/components/VolumeLevel";
 import {
   useAudioControls,
@@ -16,7 +17,7 @@ import {
 function App() {
   const isActive = useIsActive();
   const { startAudio, stopAudio } = useAudioControls();
-  const { currentPitch } = usePitchData();
+  const { currentPitch, pitchHistory } = usePitchData();
   const volumeLevel = useVolumeLevelData();
 
   const handleStart = useCallback(() => {
@@ -40,10 +41,7 @@ function App() {
           )}
 
           <div className="relative flex-1 min-h-32">
-            {/* TunerDisplay placeholder */}
-            <div className="absolute inset-0 rounded-md border flex items-center justify-center text-sm text-muted-foreground">
-              TunerDisplay
-            </div>
+            <TunerDisplay pitchHistory={pitchHistory} now={Date.now()} />
             {!isActive && <StartOverlay onStart={handleStart} />}
           </div>
 
