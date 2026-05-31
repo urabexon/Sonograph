@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 
+import { ControlPanel } from "@/components/ControlPanel";
 import { Header } from "@/components/Header";
 import { PitchInfo } from "@/components/PitchInfo";
 import { StartOverlay } from "@/components/StartOverlay";
@@ -14,13 +15,17 @@ import {
 
 function App() {
   const isActive = useIsActive();
-  const { startAudio } = useAudioControls();
+  const { startAudio, stopAudio } = useAudioControls();
   const { currentPitch } = usePitchData();
   const volumeLevel = useVolumeLevelData();
 
   const handleStart = useCallback(() => {
     void startAudio();
   }, [startAudio]);
+
+  const handleStop = useCallback(() => {
+    stopAudio();
+  }, [stopAudio]);
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
@@ -42,12 +47,7 @@ function App() {
             {!isActive && <StartOverlay onStart={handleStart} />}
           </div>
 
-          {isActive && (
-            /* ControlPanel placeholder */
-            <div className="rounded-md border p-4 text-sm text-muted-foreground">
-              ControlPanel
-            </div>
-          )}
+          {isActive && <ControlPanel onStop={handleStop} />}
         </main>
       </div>
     </ThemeProvider>
