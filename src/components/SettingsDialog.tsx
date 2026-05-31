@@ -1,7 +1,10 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback, useState } from "react";
 
+import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import { AdvancedSettingsDialog } from "@/components/AdvancedSettingsDialog";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +27,7 @@ export const SettingsDialog = memo(function SettingsDialog({
 }: SettingsDialogProps) {
   const { t } = useTranslation();
   const { state, update } = useSettings();
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const handleNotationChange = useCallback(
     (value: string) => {
@@ -94,8 +98,24 @@ export const SettingsDialog = memo(function SettingsDialog({
               </div>
             </RadioGroup>
           </div>
+
+          <div className="pt-2 border-t">
+            <Button
+              variant="ghost"
+              className="w-full justify-between"
+              onClick={() => setShowAdvanced(true)}
+            >
+              {t("settings.advanced.open")}
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </DialogContent>
+
+      <AdvancedSettingsDialog
+        open={showAdvanced}
+        onClose={() => setShowAdvanced(false)}
+      />
     </Dialog>
   );
 });
