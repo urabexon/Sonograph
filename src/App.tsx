@@ -3,6 +3,7 @@ import { memo, useCallback, useState } from "react";
 import { ControlPanel } from "@/components/ControlPanel";
 import { Header } from "@/components/Header";
 import { PitchInfo } from "@/components/PitchInfo";
+import { SettingsDialog } from "@/components/SettingsDialog";
 import { StartOverlay } from "@/components/StartOverlay";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TunerDisplay } from "@/components/TunerDisplay";
@@ -36,6 +37,7 @@ function App() {
   const { startAudio, stopAudio } = useAudioControls();
 
   const { devices, isLoading, error, refreshDevices } = useMicrophoneDevices();
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [userPickedDeviceId, setUserPickedDeviceId] = useState("");
   // Auto-pick the first available device until the user explicitly chooses one.
   const selectedDeviceId = userPickedDeviceId || devices[0]?.deviceId || "";
@@ -66,7 +68,11 @@ function App() {
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <SettingsProvider>
         <div className="min-h-svh flex flex-col bg-background text-foreground">
-          <Header />
+          <Header onOpenSettings={() => setSettingsOpen(true)} />
+          <SettingsDialog
+            open={settingsOpen}
+            onClose={() => setSettingsOpen(false)}
+          />
           <main className="flex-1 flex flex-col p-4 gap-4 max-w-4xl mx-auto w-full">
             {isActive && (
               <>
