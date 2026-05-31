@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { ControlPanel } from "@/components/ControlPanel";
 import { Header } from "@/components/Header";
@@ -13,6 +13,7 @@ import {
   usePitchData,
   useVolumeLevelData,
 } from "@/hooks/useAudioCapture";
+import { useMicrophoneDevices } from "@/hooks/useMicrophoneDevices";
 
 function App() {
   const isActive = useIsActive();
@@ -20,13 +21,32 @@ function App() {
   const { currentPitch, pitchHistory } = usePitchData();
   const volumeLevel = useVolumeLevelData();
 
+  const { devices, isLoading, error, refreshDevices } = useMicrophoneDevices();
+  const [selectedDeviceId, setSelectedDeviceId] = useState("");
+
+  useEffect(() => {
+    if (devices.length > 0 && selectedDeviceId === "") {
+      setSelectedDeviceId(devices[0].deviceId);
+    }
+  }, [devices, selectedDeviceId]);
+
   const handleStart = useCallback(() => {
-    void startAudio();
-  }, [startAudio]);
+    void startAudio(selectedDeviceId || undefined);
+  }, [startAudio, selectedDeviceId]);
 
   const handleStop = useCallback(() => {
     stopAudio();
   }, [stopAudio]);
+
+  const handleDeviceChange = useCallback(
+    (deviceId: string) => {
+      setSelectedDeviceId(deviceId);
+      if (isActive) {
+        void startAudio(deviceId);
+      }
+    },
+    [isActive, startAudio],
+  );
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
@@ -42,7 +62,17 @@ function App() {
 
           <div className="relative flex-1 min-h-32">
             <TunerDisplay pitchHistory={pitchHistory} now={Date.now()} />
-            {!isActive && <StartOverlay onStart={handleStart} />}
+            {!isActive && (
+              <StartOverlay
+                onStart={handleStart}
+                devices={devices}
+                selectedDeviceId={selectedDeviceId}
+                onDeviceChange={handleDeviceChange}
+                onRefreshDevices={() => void refreshDevices()}
+                isLoading={isLoading}
+                error={error}
+              />
+            )}
           </div>
 
           {isActive && <ControlPanel onStop={handleStop} />}
