@@ -4,16 +4,19 @@ import { Header } from "@/components/Header";
 import { PitchInfo } from "@/components/PitchInfo";
 import { StartOverlay } from "@/components/StartOverlay";
 import { ThemeProvider } from "@/components/theme-provider";
+import { VolumeLevel } from "@/components/VolumeLevel";
 import {
   useAudioControls,
   useIsActive,
   usePitchData,
+  useVolumeLevelData,
 } from "@/hooks/useAudioCapture";
 
 function App() {
   const isActive = useIsActive();
   const { startAudio } = useAudioControls();
   const { currentPitch } = usePitchData();
+  const volumeLevel = useVolumeLevelData();
 
   const handleStart = useCallback(() => {
     void startAudio();
@@ -27,10 +30,7 @@ function App() {
           {isActive && (
             <>
               <PitchInfo pitch={currentPitch} />
-              {/* VolumeLevel placeholder */}
-              <div className="rounded-md border p-4 text-sm text-muted-foreground">
-                VolumeLevel
-              </div>
+              <VolumeLevel volume={volumeLevel} />
             </>
           )}
 
