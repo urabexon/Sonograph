@@ -1,9 +1,17 @@
+import { useCallback } from "react";
+
 import { Header } from "@/components/Header";
+import { StartOverlay } from "@/components/StartOverlay";
 import { ThemeProvider } from "@/components/theme-provider";
-import { useIsActive } from "@/hooks/useAudioCapture";
+import { useAudioControls, useIsActive } from "@/hooks/useAudioCapture";
 
 function App() {
   const isActive = useIsActive();
+  const { startAudio } = useAudioControls();
+
+  const handleStart = useCallback(() => {
+    void startAudio();
+  }, [startAudio]);
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
@@ -28,12 +36,7 @@ function App() {
             <div className="absolute inset-0 rounded-md border flex items-center justify-center text-sm text-muted-foreground">
               TunerDisplay
             </div>
-            {!isActive && (
-              /* StartOverlay placeholder */
-              <div className="absolute inset-0 rounded-md border bg-background/80 backdrop-blur-sm flex items-center justify-center text-sm text-muted-foreground">
-                StartOverlay
-              </div>
-            )}
+            {!isActive && <StartOverlay onStart={handleStart} />}
           </div>
 
           {isActive && (
