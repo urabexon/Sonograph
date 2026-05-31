@@ -11,11 +11,18 @@ import { VolumeLevel } from "@/components/VolumeLevel";
 import {
   useAudioControls,
   useIsActive,
+  useNoiseGateEffect,
   usePitchData,
   useVolumeLevelData,
 } from "@/hooks/useAudioCapture";
 import { useMicrophoneDevices } from "@/hooks/useMicrophoneDevices";
 import { SettingsProvider, useSettings } from "@/hooks/useSettings";
+
+function SettingsAudioBridge() {
+  const { state } = useSettings();
+  useNoiseGateEffect(state.advanced.noiseGateThreshold);
+  return null;
+}
 
 const PitchInfoContainer = memo(function PitchInfoContainer() {
   const { currentPitch } = usePitchData();
@@ -84,6 +91,7 @@ function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <SettingsProvider>
+        <SettingsAudioBridge />
         <div className="min-h-svh flex flex-col bg-background text-foreground">
           <Header onOpenSettings={() => setSettingsOpen(true)} />
           <SettingsDialog
