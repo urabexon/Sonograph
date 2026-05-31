@@ -14,5 +14,12 @@
     "light": "Clair",
     "dark": "Sombre",
     "system": "Système"
+  },
+  "header": {
+    "menu": "Menu",
+    "recordings": "Enregistrements",
+    "settings": "Paramètres",
+    "about": "À propos",
+    "theme": "Thème"
   }
 }

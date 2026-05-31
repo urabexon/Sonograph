@@ -14,5 +14,12 @@
     "light": "ライト",
     "dark": "ダーク",
     "system": "システム"
+  },
+  "header": {
+    "menu": "メニュー",
+    "recordings": "録音一覧",
+    "settings": "設定",
+    "about": "このアプリについて",
+    "theme": "テーマ"
   }
 }

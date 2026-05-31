@@ -14,5 +14,12 @@
     "light": "Light",
     "dark": "Dark",
     "system": "System"
+  },
+  "header": {
+    "menu": "Menu",
+    "recordings": "Recordings",
+    "settings": "Settings",
+    "about": "About",
+    "theme": "Theme"
   }
 }
