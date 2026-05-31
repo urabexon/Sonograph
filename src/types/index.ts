@@ -88,18 +88,3 @@ export const DEFAULT_SETTINGS: Settings = {
   accidental: "sharp",
   advanced: DEFAULT_ADVANCED_SETTINGS,
 };
-
-// Display labels for the settings UI
-export const TRANSPOSITION_LABELS: Record<Transposition, string> = {
-  C: "C (Concert)",
-  Bb: "B♭ (Clarinet, Trumpet)",
-  Eb: "E♭ (Alto Sax)",
-  F: "F (Horn)",
-  G: "G (Alto Flute)",
-  A: "A (Clarinet A)",
-};
-
-export const TEMPERAMENT_LABELS: Record<Temperament, string> = {
-  equal: "Equal temperament",
-  just: "Just intonation (C Major)",
-};
