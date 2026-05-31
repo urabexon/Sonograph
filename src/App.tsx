@@ -1,13 +1,19 @@
 import { useCallback } from "react";
 
 import { Header } from "@/components/Header";
+import { PitchInfo } from "@/components/PitchInfo";
 import { StartOverlay } from "@/components/StartOverlay";
 import { ThemeProvider } from "@/components/theme-provider";
-import { useAudioControls, useIsActive } from "@/hooks/useAudioCapture";
+import {
+  useAudioControls,
+  useIsActive,
+  usePitchData,
+} from "@/hooks/useAudioCapture";
 
 function App() {
   const isActive = useIsActive();
   const { startAudio } = useAudioControls();
+  const { currentPitch } = usePitchData();
 
   const handleStart = useCallback(() => {
     void startAudio();
@@ -20,10 +26,7 @@ function App() {
         <main className="flex-1 flex flex-col p-4 gap-4 max-w-4xl mx-auto w-full">
           {isActive && (
             <>
-              {/* PitchInfo placeholder */}
-              <div className="rounded-md border p-4 text-sm text-muted-foreground">
-                PitchInfo
-              </div>
+              <PitchInfo pitch={currentPitch} />
               {/* VolumeLevel placeholder */}
               <div className="rounded-md border p-4 text-sm text-muted-foreground">
                 VolumeLevel
