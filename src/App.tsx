@@ -14,10 +14,7 @@ import {
   useVolumeLevelData,
 } from "@/hooks/useAudioCapture";
 import { useMicrophoneDevices } from "@/hooks/useMicrophoneDevices";
-
-// Containers that subscribe to high-frequency data are isolated and memoized
-// so that the rest of the tree (Header, ControlPanel, StartOverlay) does not
-// re-render at 60fps.
+import { SettingsProvider } from "@/hooks/useSettings";
 
 const PitchInfoContainer = memo(function PitchInfoContainer() {
   const { currentPitch } = usePitchData();
@@ -41,8 +38,7 @@ function App() {
   const { devices, isLoading, error, refreshDevices } = useMicrophoneDevices();
   const [userPickedDeviceId, setUserPickedDeviceId] = useState("");
   // Auto-pick the first available device until the user explicitly chooses one.
-  const selectedDeviceId =
-    userPickedDeviceId || devices[0]?.deviceId || "";
+  const selectedDeviceId = userPickedDeviceId || devices[0]?.deviceId || "";
 
   const handleStart = useCallback(() => {
     void startAudio(selectedDeviceId || undefined);
@@ -68,34 +64,36 @@ function App() {
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <div className="min-h-svh flex flex-col bg-background text-foreground">
-        <Header />
-        <main className="flex-1 flex flex-col p-4 gap-4 max-w-4xl mx-auto w-full">
-          {isActive && (
-            <>
-              <PitchInfoContainer />
-              <VolumeLevelContainer />
-            </>
-          )}
-
-          <div className="relative flex-1 min-h-32">
-            <TunerDisplayContainer />
-            {!isActive && (
-              <StartOverlay
-                onStart={handleStart}
-                devices={devices}
-                selectedDeviceId={selectedDeviceId}
-                onDeviceChange={handleDeviceChange}
-                onRefreshDevices={handleRefreshDevices}
-                isLoading={isLoading}
-                error={error}
-              />
+      <SettingsProvider>
+        <div className="min-h-svh flex flex-col bg-background text-foreground">
+          <Header />
+          <main className="flex-1 flex flex-col p-4 gap-4 max-w-4xl mx-auto w-full">
+            {isActive && (
+              <>
+                <PitchInfoContainer />
+                <VolumeLevelContainer />
+              </>
             )}
-          </div>
 
-          {isActive && <ControlPanel onStop={handleStop} />}
-        </main>
-      </div>
+            <div className="relative flex-1 min-h-32">
+              <TunerDisplayContainer />
+              {!isActive && (
+                <StartOverlay
+                  onStart={handleStart}
+                  devices={devices}
+                  selectedDeviceId={selectedDeviceId}
+                  onDeviceChange={handleDeviceChange}
+                  onRefreshDevices={handleRefreshDevices}
+                  isLoading={isLoading}
+                  error={error}
+                />
+              )}
+            </div>
+
+            {isActive && <ControlPanel onStop={handleStop} />}
+          </main>
+        </div>
+      </SettingsProvider>
     </ThemeProvider>
   );
 }
