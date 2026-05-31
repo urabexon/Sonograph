@@ -1,16 +1,26 @@
 import { Loader2, Play } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import { MicrophoneSelector } from "@/components/MicrophoneSelector";
 import { Button } from "@/components/ui/button";
+import type { AudioDevice } from "@/hooks/useMicrophoneDevices";
 
 type StartOverlayProps = {
   readonly onStart: () => void;
+  readonly devices: readonly AudioDevice[];
+  readonly selectedDeviceId: string;
+  readonly onDeviceChange: (deviceId: string) => void;
+  readonly onRefreshDevices: () => void;
   readonly isLoading?: boolean;
   readonly error?: string | null;
 };
 
 export function StartOverlay({
   onStart,
+  devices,
+  selectedDeviceId,
+  onDeviceChange,
+  onRefreshDevices,
   isLoading = false,
   error = null,
 }: StartOverlayProps) {
@@ -32,23 +42,32 @@ export function StartOverlay({
           </div>
         )}
 
+        {devices.length > 0 ? (
+          <MicrophoneSelector
+            devices={devices}
+            selectedDeviceId={selectedDeviceId}
+            onDeviceChange={onDeviceChange}
+            isLoading={isLoading}
+          />
+        ) : isLoading ? (
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <span>{t("mic.detecting")}</span>
+          </div>
+        ) : (
+          <Button onClick={onRefreshDevices} variant="secondary">
+            {t("mic.detectButton")}
+          </Button>
+        )}
+
         <Button
           onClick={onStart}
           size="lg"
           className="w-full"
-          disabled={isLoading}
+          disabled={devices.length === 0}
         >
-          {isLoading ? (
-            <>
-              <Loader2 className="animate-spin" />
-              {t("start.loading")}
-            </>
-          ) : (
-            <>
-              <Play />
-              {t("start.button")}
-            </>
-          )}
+          <Play />
+          {t("start.button")}
         </Button>
       </div>
     </div>
