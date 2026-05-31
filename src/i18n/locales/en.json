@@ -8,5 +8,32 @@
   "app": {
     "title": "Sonograph",
     "tagline": "Real-time pitch detection in the browser"
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "header": {
+    "menu": "Menu",
+    "recordings": "Recordings",
+    "settings": "Settings",
+    "about": "About",
+    "theme": "Theme"
+  },
+  "start": {
+    "instruction": "Start your microphone to begin",
+    "button": "Start",
+    "loading": "Starting..."
+  },
+  "control": {
+    "save": "Save recording",
+    "stop": "Stop"
+  },
+  "mic": {
+    "placeholder": "Select microphone",
+    "detecting": "Detecting microphones...",
+    "detectButton": "Detect microphones"
   }
 }

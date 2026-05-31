@@ -8,5 +8,32 @@
   "app": {
     "title": "Sonograph",
     "tagline": "Détection de hauteur en temps réel dans le navigateur"
+  },
+  "theme": {
+    "toggle": "Changer de thème",
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système"
+  },
+  "header": {
+    "menu": "Menu",
+    "recordings": "Enregistrements",
+    "settings": "Paramètres",
+    "about": "À propos",
+    "theme": "Thème"
+  },
+  "start": {
+    "instruction": "Démarrez votre microphone pour commencer",
+    "button": "Démarrer",
+    "loading": "Démarrage..."
+  },
+  "control": {
+    "save": "Enregistrer",
+    "stop": "Arrêter"
+  },
+  "mic": {
+    "placeholder": "Choisir un microphone",
+    "detecting": "Détection des microphones...",
+    "detectButton": "Détecter les microphones"
   }
 }

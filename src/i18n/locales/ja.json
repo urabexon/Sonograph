@@ -8,5 +8,32 @@
   "app": {
     "title": "Sonograph",
     "tagline": "ブラウザ上で動作するリアルタイムピッチ検出"
+  },
+  "theme": {
+    "toggle": "テーマを切り替え",
+    "light": "ライト",
+    "dark": "ダーク",
+    "system": "システム"
+  },
+  "header": {
+    "menu": "メニュー",
+    "recordings": "録音一覧",
+    "settings": "設定",
+    "about": "このアプリについて",
+    "theme": "テーマ"
+  },
+  "start": {
+    "instruction": "マイクを起動して開始します",
+    "button": "開始",
+    "loading": "起動中..."
+  },
+  "control": {
+    "save": "録音を保存",
+    "stop": "停止"
+  },
+  "mic": {
+    "placeholder": "マイクを選択",
+    "detecting": "マイクを検出中...",
+    "detectButton": "マイクを検出"
   }
 }

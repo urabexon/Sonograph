@@ -1,16 +1,102 @@
-import { useTranslation } from "react-i18next";
+import { memo, useCallback, useState } from "react";
 
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { ControlPanel } from "@/components/ControlPanel";
+import { Header } from "@/components/Header";
+import { PitchInfo } from "@/components/PitchInfo";
+import { StartOverlay } from "@/components/StartOverlay";
+import { ThemeProvider } from "@/components/theme-provider";
+import { TunerDisplay } from "@/components/TunerDisplay";
+import { VolumeLevel } from "@/components/VolumeLevel";
+import {
+  useAudioControls,
+  useIsActive,
+  usePitchData,
+  useVolumeLevelData,
+} from "@/hooks/useAudioCapture";
+import { useMicrophoneDevices } from "@/hooks/useMicrophoneDevices";
+
+// Containers that subscribe to high-frequency data are isolated and memoized
+// so that the rest of the tree (Header, ControlPanel, StartOverlay) does not
+// re-render at 60fps.
+
+const PitchInfoContainer = memo(function PitchInfoContainer() {
+  const { currentPitch } = usePitchData();
+  return <PitchInfo pitch={currentPitch} />;
+});
+
+const VolumeLevelContainer = memo(function VolumeLevelContainer() {
+  const volumeLevel = useVolumeLevelData();
+  return <VolumeLevel volume={volumeLevel} />;
+});
+
+const TunerDisplayContainer = memo(function TunerDisplayContainer() {
+  const { pitchHistory, timestamp } = usePitchData();
+  return <TunerDisplay pitchHistory={pitchHistory} now={timestamp} />;
+});
 
 function App() {
-  const { t } = useTranslation();
+  const isActive = useIsActive();
+  const { startAudio, stopAudio } = useAudioControls();
+
+  const { devices, isLoading, error, refreshDevices } = useMicrophoneDevices();
+  const [userPickedDeviceId, setUserPickedDeviceId] = useState("");
+  // Auto-pick the first available device until the user explicitly chooses one.
+  const selectedDeviceId =
+    userPickedDeviceId || devices[0]?.deviceId || "";
+
+  const handleStart = useCallback(() => {
+    void startAudio(selectedDeviceId || undefined);
+  }, [startAudio, selectedDeviceId]);
+
+  const handleStop = useCallback(() => {
+    stopAudio();
+  }, [stopAudio]);
+
+  const handleDeviceChange = useCallback(
+    (deviceId: string) => {
+      setUserPickedDeviceId(deviceId);
+      if (isActive) {
+        void startAudio(deviceId);
+      }
+    },
+    [isActive, startAudio],
+  );
+
+  const handleRefreshDevices = useCallback(() => {
+    void refreshDevices();
+  }, [refreshDevices]);
 
   return (
-    <div className="min-h-svh flex flex-col items-center justify-center gap-4">
-      <LanguageSwitcher />
-      <h1 className="text-3xl font-bold">{t("app.title")}</h1>
-      <p className="text-muted-foreground">{t("app.tagline")}</p>
-    </div>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <div className="min-h-svh flex flex-col bg-background text-foreground">
+        <Header />
+        <main className="flex-1 flex flex-col p-4 gap-4 max-w-4xl mx-auto w-full">
+          {isActive && (
+            <>
+              <PitchInfoContainer />
+              <VolumeLevelContainer />
+            </>
+          )}
+
+          <div className="relative flex-1 min-h-32">
+            <TunerDisplayContainer />
+            {!isActive && (
+              <StartOverlay
+                onStart={handleStart}
+                devices={devices}
+                selectedDeviceId={selectedDeviceId}
+                onDeviceChange={handleDeviceChange}
+                onRefreshDevices={handleRefreshDevices}
+                isLoading={isLoading}
+                error={error}
+              />
+            )}
+          </div>
+
+          {isActive && <ControlPanel onStop={handleStop} />}
+        </main>
+      </div>
+    </ThemeProvider>
   );
 }
 
