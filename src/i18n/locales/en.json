@@ -22,6 +22,19 @@
     "about": "About",
     "theme": "Theme"
   },
+  "settings": {
+    "title": "Settings",
+    "notation": {
+      "label": "Notation",
+      "letter": "CDEFGAB",
+      "solfege": "ドレミ"
+    },
+    "accidental": {
+      "label": "Accidentals",
+      "sharp": "♯ Sharp",
+      "flat": "♭ Flat"
+    }
+  },
   "start": {
     "instruction": "Start your microphone to begin",
     "button": "Start",

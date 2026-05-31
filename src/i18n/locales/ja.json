@@ -22,6 +22,19 @@
     "about": "このアプリについて",
     "theme": "テーマ"
   },
+  "settings": {
+    "title": "設定",
+    "notation": {
+      "label": "表記法",
+      "letter": "CDEFGAB",
+      "solfege": "ドレミ"
+    },
+    "accidental": {
+      "label": "変化記号",
+      "sharp": "♯ シャープ",
+      "flat": "♭ フラット"
+    }
+  },
   "start": {
     "instruction": "マイクを起動して開始します",
     "button": "開始",
