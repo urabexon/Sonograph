@@ -104,11 +104,13 @@ function resetStereoDetection(): void {
 type PitchSnapshot = {
   readonly currentPitch: PitchData;
   readonly pitchHistory: readonly PitchHistoryEntry[];
+  readonly timestamp: number;
 };
 
 let pitchSnapshot: PitchSnapshot = {
   currentPitch: state.currentPitch,
   pitchHistory: state.pitchHistory,
+  timestamp: state.pitchTimestamp,
 };
 
 // ============================================================================
@@ -140,6 +142,7 @@ function updateState(partial: Partial<AudioCaptureState>): void {
     pitchSnapshot = {
       currentPitch: state.currentPitch,
       pitchHistory: state.pitchHistory,
+      timestamp: state.pitchTimestamp,
     };
     notifyListeners(pitchListeners);
   }
