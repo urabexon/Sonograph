@@ -58,3 +58,48 @@ export type VolumeLevelData = {
   readonly mono: ChannelVolume;
   readonly isStereo: boolean;
 };
+
+// User-configurable advanced tuning settings
+export type AdvancedSettings = {
+  readonly referenceFrequency: number;
+  readonly transposition: Transposition;
+  readonly centThreshold: number;
+  readonly temperament: Temperament;
+  readonly noiseGateThreshold: number;
+};
+
+export const DEFAULT_ADVANCED_SETTINGS: AdvancedSettings = {
+  referenceFrequency: 440,
+  transposition: "C",
+  centThreshold: 5,
+  temperament: "equal",
+  noiseGateThreshold: 0.01,
+};
+
+// All user settings, persisted to localStorage
+export type Settings = {
+  readonly notation: Notation;
+  readonly accidental: Accidental;
+  readonly advanced: AdvancedSettings;
+};
+
+export const DEFAULT_SETTINGS: Settings = {
+  notation: "letter",
+  accidental: "sharp",
+  advanced: DEFAULT_ADVANCED_SETTINGS,
+};
+
+// Display labels for the settings UI
+export const TRANSPOSITION_LABELS: Record<Transposition, string> = {
+  C: "C (Concert)",
+  Bb: "B♭ (Clarinet, Trumpet)",
+  Eb: "E♭ (Alto Sax)",
+  F: "F (Horn)",
+  G: "G (Alto Flute)",
+  A: "A (Clarinet A)",
+};
+
+export const TEMPERAMENT_LABELS: Record<Temperament, string> = {
+  equal: "Equal temperament",
+  just: "Just intonation (C Major)",
+};
