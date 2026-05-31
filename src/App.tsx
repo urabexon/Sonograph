@@ -15,11 +15,20 @@ import {
   useVolumeLevelData,
 } from "@/hooks/useAudioCapture";
 import { useMicrophoneDevices } from "@/hooks/useMicrophoneDevices";
-import { SettingsProvider } from "@/hooks/useSettings";
+import { SettingsProvider, useSettings } from "@/hooks/useSettings";
 
 const PitchInfoContainer = memo(function PitchInfoContainer() {
   const { currentPitch } = usePitchData();
-  return <PitchInfo pitch={currentPitch} />;
+  const { state } = useSettings();
+  return (
+    <PitchInfo
+      pitch={currentPitch}
+      notation={state.notation}
+      accidental={state.accidental}
+      tuningOptions={state.advanced}
+      centThreshold={state.advanced.centThreshold}
+    />
+  );
 });
 
 const VolumeLevelContainer = memo(function VolumeLevelContainer() {
@@ -29,7 +38,15 @@ const VolumeLevelContainer = memo(function VolumeLevelContainer() {
 
 const TunerDisplayContainer = memo(function TunerDisplayContainer() {
   const { pitchHistory, timestamp } = usePitchData();
-  return <TunerDisplay pitchHistory={pitchHistory} now={timestamp} />;
+  const { state } = useSettings();
+  return (
+    <TunerDisplay
+      pitchHistory={pitchHistory}
+      now={timestamp}
+      notation={state.notation}
+      accidental={state.accidental}
+    />
+  );
 });
 
 function App() {
