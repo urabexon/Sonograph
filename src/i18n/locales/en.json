@@ -33,6 +33,43 @@
       "label": "Accidentals",
       "sharp": "♯ Sharp",
       "flat": "♭ Flat"
+    },
+    "advanced": {
+      "open": "Advanced settings",
+      "title": "Advanced settings",
+      "reset": "Reset",
+      "referenceFrequency": {
+        "label": "Reference frequency (A4)",
+        "hint": "440 Hz is standard; orchestras commonly use 442 Hz"
+      },
+      "transposition": {
+        "label": "Transposition",
+        "hint": "Shifts the displayed note names for transposing instruments",
+        "options": {
+          "C": "C (Concert)",
+          "Bb": "B♭ (Clarinet, Trumpet)",
+          "Eb": "E♭ (Alto Sax)",
+          "F": "F (Horn)",
+          "G": "G (Alto Flute)",
+          "A": "A (Clarinet in A)"
+        }
+      },
+      "centThreshold": {
+        "label": "Cent threshold",
+        "hint": "Within this range the pitch is judged in tune (shown green)"
+      },
+      "temperament": {
+        "label": "Temperament",
+        "hint": "Just intonation makes chords ring purely",
+        "options": {
+          "equal": "Equal temperament",
+          "just": "Just intonation (C major)"
+        }
+      },
+      "noiseGate": {
+        "label": "Noise gate",
+        "hint": "Pitch detection is skipped below this level (higher means less sensitive)"
+      }
     }
   },
   "start": {
