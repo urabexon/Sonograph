@@ -21,5 +21,10 @@
     "settings": "設定",
     "about": "このアプリについて",
     "theme": "テーマ"
+  },
+  "start": {
+    "instruction": "マイクを起動して開始します",
+    "button": "開始",
+    "loading": "起動中..."
   }
 }

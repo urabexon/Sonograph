@@ -21,5 +21,10 @@
     "settings": "Settings",
     "about": "About",
     "theme": "Theme"
+  },
+  "start": {
+    "instruction": "Start your microphone to begin",
+    "button": "Start",
+    "loading": "Starting..."
   }
 }
