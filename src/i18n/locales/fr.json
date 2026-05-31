@@ -30,5 +30,10 @@
   "control": {
     "save": "Enregistrer",
     "stop": "Arrêter"
+  },
+  "mic": {
+    "placeholder": "Choisir un microphone",
+    "detecting": "Détection des microphones...",
+    "detectButton": "Détecter les microphones"
   }
 }

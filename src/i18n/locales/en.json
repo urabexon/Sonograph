@@ -30,5 +30,10 @@
   "control": {
     "save": "Save recording",
     "stop": "Stop"
+  },
+  "mic": {
+    "placeholder": "Select microphone",
+    "detecting": "Detecting microphones...",
+    "detectButton": "Detect microphones"
   }
 }

@@ -30,5 +30,10 @@
   "control": {
     "save": "録音を保存",
     "stop": "停止"
+  },
+  "mic": {
+    "placeholder": "マイクを選択",
+    "detecting": "マイクを検出中...",
+    "detectButton": "マイクを検出"
   }
 }
