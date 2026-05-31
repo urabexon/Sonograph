@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useState } from "react";
 
 import { ControlPanel } from "@/components/ControlPanel";
 import { Header } from "@/components/Header";
@@ -30,8 +30,8 @@ const VolumeLevelContainer = memo(function VolumeLevelContainer() {
 });
 
 const TunerDisplayContainer = memo(function TunerDisplayContainer() {
-  const { pitchHistory } = usePitchData();
-  return <TunerDisplay pitchHistory={pitchHistory} now={Date.now()} />;
+  const { pitchHistory, timestamp } = usePitchData();
+  return <TunerDisplay pitchHistory={pitchHistory} now={timestamp} />;
 });
 
 function App() {
@@ -39,13 +39,10 @@ function App() {
   const { startAudio, stopAudio } = useAudioControls();
 
   const { devices, isLoading, error, refreshDevices } = useMicrophoneDevices();
-  const [selectedDeviceId, setSelectedDeviceId] = useState("");
-
-  useEffect(() => {
-    if (devices.length > 0 && selectedDeviceId === "") {
-      setSelectedDeviceId(devices[0].deviceId);
-    }
-  }, [devices, selectedDeviceId]);
+  const [userPickedDeviceId, setUserPickedDeviceId] = useState("");
+  // Auto-pick the first available device until the user explicitly chooses one.
+  const selectedDeviceId =
+    userPickedDeviceId || devices[0]?.deviceId || "";
 
   const handleStart = useCallback(() => {
     void startAudio(selectedDeviceId || undefined);
@@ -57,7 +54,7 @@ function App() {
 
   const handleDeviceChange = useCallback(
     (deviceId: string) => {
-      setSelectedDeviceId(deviceId);
+      setUserPickedDeviceId(deviceId);
       if (isActive) {
         void startAudio(deviceId);
       }
