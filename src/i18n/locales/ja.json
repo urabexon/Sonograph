@@ -26,5 +26,9 @@
     "instruction": "マイクを起動して開始します",
     "button": "開始",
     "loading": "起動中..."
+  },
+  "control": {
+    "save": "録音を保存",
+    "stop": "停止"
   }
 }

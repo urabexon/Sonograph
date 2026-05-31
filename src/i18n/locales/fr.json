@@ -26,5 +26,9 @@
     "instruction": "Démarrez votre microphone pour commencer",
     "button": "Démarrer",
     "loading": "Démarrage..."
+  },
+  "control": {
+    "save": "Enregistrer",
+    "stop": "Arrêter"
   }
 }
