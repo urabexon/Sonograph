@@ -3,20 +3,27 @@ import { del, get, set } from "idb-keyval";
 
 import {
   RECORDING_LIST_KEY,
+  downloadFileName,
   partitionByExpiry,
   recordingKey,
   sortByNewest,
   toRecordingMeta,
 } from "@/lib/recordingUtils";
-import type { Recording, RecordingMeta } from "@/types";
+import type { AudioFormat, Recording, RecordingMeta } from "@/types";
+import { convertAudioBlob } from "@/utils/audioConverter";
 
 // Read/manage side of the recording store: lists saved recordings, deletes, and plays them back
 
 type RecordingStorageResult = {
   readonly recordings: readonly RecordingMeta[];
   readonly isLoading: boolean;
+  readonly isConverting: boolean;
   readonly refresh: () => Promise<void>;
   readonly deleteRecording: (id: string) => Promise<void>;
+  readonly downloadRecording: (
+    id: string,
+    format?: AudioFormat,
+  ) => Promise<void>;
   readonly playRecording: (id: string) => Promise<void>;
   readonly stopPlayback: () => void;
   readonly seek: (time: number) => void;
@@ -28,6 +35,7 @@ type RecordingStorageResult = {
 export function useRecordingStorage(): RecordingStorageResult {
   const [recordings, setRecordings] = useState<readonly RecordingMeta[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isConverting, setIsConverting] = useState(false);
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [playbackTime, setPlaybackTime] = useState(0);
   const [playbackDuration, setPlaybackDuration] = useState(0);
@@ -112,6 +120,39 @@ export function useRecordingStorage(): RecordingStorageResult {
     [playingId, cleanupPlayback],
   );
 
+  const downloadRecording = useCallback(
+    async (id: string, format: AudioFormat = "wav"): Promise<void> => {
+      let recording: Recording | undefined;
+      try {
+        recording = await get<Recording>(recordingKey(id));
+      } catch {
+        return;
+      }
+      if (!recording) return;
+
+      setIsConverting(true);
+      try {
+        const { blob, extension } = await convertAudioBlob(
+          recording.audioBlob,
+          format,
+        );
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = downloadFileName(recording.createdAt, extension);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch {
+        // Decode/encode failed: nothing downloaded.
+      } finally {
+        setIsConverting(false);
+      }
+    },
+    [],
+  );
+
   const playRecording = useCallback(
     async (id: string): Promise<void> => {
       cleanupPlayback();
@@ -171,8 +212,10 @@ export function useRecordingStorage(): RecordingStorageResult {
   return {
     recordings,
     isLoading,
+    isConverting,
     refresh,
     deleteRecording,
+    downloadRecording,
     playRecording,
     stopPlayback,
     seek,
