@@ -63,6 +63,15 @@ export type RecordingMeta = {
   readonly duration: number;
 };
 
+// Download format for a recording
+// Recordings are always stored as WAV, MP3 conversion is supported
+export type AudioFormat = "wav" | "mp3";
+
+export const AUDIO_FORMAT_EXTENSIONS: Record<AudioFormat, string> = {
+  wav: "wav",
+  mp3: "mp3",
+};
+
 // Volume level for one channel
 export type ChannelVolume = {
   readonly rms: number;
