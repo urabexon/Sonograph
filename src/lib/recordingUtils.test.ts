@@ -2,14 +2,23 @@ import { describe, expect, it } from "vitest";
 import type { Recording, RecordingMeta } from "@/types";
 
 import {
+  RECORDING_LIST_KEY,
   RECORDING_TTL_MS,
   downloadFileName,
   expiresAtFrom,
   isExpired,
   partitionByExpiry,
+  recordingKey,
   sortByNewest,
   toRecordingMeta,
 } from "./recordingUtils";
+
+describe("storage keys", () => {
+  it("builds a per-recording key and exposes the list key", () => {
+    expect(recordingKey("abc")).toBe("recording-abc");
+    expect(RECORDING_LIST_KEY).toBe("recording-list");
+  });
+});
 
 describe("expiresAtFrom", () => {
   it("adds the 7-day TTL to the creation time", () => {
@@ -76,13 +85,12 @@ describe("sortByNewest", () => {
       { id: "c", createdAt: 20, expiresAt: 0, duration: 0 },
     ];
     expect(sortByNewest(metas).map((m) => m.id)).toEqual(["b", "c", "a"]);
-    expect(metas.map((m) => m.id)).toEqual(["a", "b", "c"]); // unchanged
+    expect(metas.map((m) => m.id)).toEqual(["a", "b", "c"]);
   });
 });
 
 describe("downloadFileName", () => {
   it("formats a UTC timestamp into a safe file name", () => {
-    // 2026-06-02T08:30:15Z
     const createdAt = Date.UTC(2026, 5, 2, 8, 30, 15);
     expect(downloadFileName(createdAt, "wav")).toBe(
       "recording-2026-06-02T08-30-15.wav",
