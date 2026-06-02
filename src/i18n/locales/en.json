@@ -72,6 +72,26 @@
       }
     }
   },
+  "recordings": {
+    "title": "Recordings",
+    "description": "Recordings are kept for 7 days, then deleted automatically.",
+    "empty": "No recordings yet",
+    "remaining": {
+      "expired": "Expired",
+      "days": "{{count}}d left",
+      "hours": "{{count}}h left",
+      "soon": "Expiring soon"
+    },
+    "format": {
+      "wav": "WAV (uncompressed)",
+      "mp3": "MP3"
+    },
+    "defaultBadge": "(default)",
+    "play": "Play",
+    "stop": "Stop",
+    "download": "Download",
+    "delete": "Delete"
+  },
   "start": {
     "instruction": "Start your microphone to begin",
     "button": "Start",

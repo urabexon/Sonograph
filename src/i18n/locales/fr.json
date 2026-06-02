@@ -72,6 +72,26 @@
       }
     }
   },
+  "recordings": {
+    "title": "Enregistrements",
+    "description": "Les enregistrements sont conservés 7 jours, puis supprimés automatiquement.",
+    "empty": "Aucun enregistrement",
+    "remaining": {
+      "expired": "Expiré",
+      "days": "{{count}} j restants",
+      "hours": "{{count}} h restantes",
+      "soon": "Expire bientôt"
+    },
+    "format": {
+      "wav": "WAV (non compressé)",
+      "mp3": "MP3"
+    },
+    "defaultBadge": "(par défaut)",
+    "play": "Lire",
+    "stop": "Arrêter",
+    "download": "Télécharger",
+    "delete": "Supprimer"
+  },
   "start": {
     "instruction": "Démarrez votre microphone pour commencer",
     "button": "Démarrer",
