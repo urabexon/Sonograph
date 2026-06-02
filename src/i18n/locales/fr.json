@@ -22,6 +22,56 @@
     "about": "À propos",
     "theme": "Thème"
   },
+  "settings": {
+    "title": "Paramètres",
+    "notation": {
+      "label": "Notation",
+      "letter": "CDEFGAB",
+      "solfege": "ドレミ"
+    },
+    "accidental": {
+      "label": "Altérations",
+      "sharp": "♯ Dièse",
+      "flat": "♭ Bémol"
+    },
+    "advanced": {
+      "open": "Paramètres avancés",
+      "title": "Paramètres avancés",
+      "reset": "Réinitialiser",
+      "referenceFrequency": {
+        "label": "Fréquence de référence (A4)",
+        "hint": "440 Hz est la norme ; les orchestres utilisent souvent 442 Hz"
+      },
+      "transposition": {
+        "label": "Transposition",
+        "hint": "Décale les noms de notes affichés pour les instruments transpositeurs",
+        "options": {
+          "C": "C (Concert)",
+          "Bb": "B♭ (Clarinette, Trompette)",
+          "Eb": "E♭ (Saxophone alto)",
+          "F": "F (Cor)",
+          "G": "G (Flûte alto)",
+          "A": "A (Clarinette en La)"
+        }
+      },
+      "centThreshold": {
+        "label": "Seuil en cents",
+        "hint": "Dans cette plage, la note est jugée juste (affichée en vert)"
+      },
+      "temperament": {
+        "label": "Tempérament",
+        "hint": "L'intonation juste fait sonner les accords purement",
+        "options": {
+          "equal": "Tempérament égal",
+          "just": "Intonation juste (Ut majeur)"
+        }
+      },
+      "noiseGate": {
+        "label": "Seuil antibruit",
+        "hint": "La détection est ignorée en dessous de ce niveau (plus haut = moins sensible)"
+      }
+    }
+  },
   "start": {
     "instruction": "Démarrez votre microphone pour commencer",
     "button": "Démarrer",

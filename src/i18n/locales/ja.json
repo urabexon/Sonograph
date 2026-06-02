@@ -22,6 +22,56 @@
     "about": "このアプリについて",
     "theme": "テーマ"
   },
+  "settings": {
+    "title": "設定",
+    "notation": {
+      "label": "表記法",
+      "letter": "CDEFGAB",
+      "solfege": "ドレミ"
+    },
+    "accidental": {
+      "label": "変化記号",
+      "sharp": "♯ シャープ",
+      "flat": "♭ フラット"
+    },
+    "advanced": {
+      "open": "高度な設定",
+      "title": "高度な設定",
+      "reset": "リセット",
+      "referenceFrequency": {
+        "label": "基準周波数 (A4)",
+        "hint": "440Hz が標準、オーケストラでは 442Hz が一般的です"
+      },
+      "transposition": {
+        "label": "移調設定",
+        "hint": "移調楽器用に表示される音名をシフトします",
+        "options": {
+          "C": "C（コンサート）",
+          "Bb": "B♭（クラリネット・トランペット）",
+          "Eb": "E♭（アルトサックス）",
+          "F": "F（ホルン）",
+          "G": "G（アルトフルート）",
+          "A": "A（A管クラリネット）"
+        }
+      },
+      "centThreshold": {
+        "label": "セント閾値",
+        "hint": "この範囲内なら「合っている」と判定します（緑色表示）"
+      },
+      "temperament": {
+        "label": "調律方式",
+        "hint": "純正律は和音を純粋に響かせるための調律方式です",
+        "options": {
+          "equal": "平均律",
+          "just": "純正律（ハ長調）"
+        }
+      },
+      "noiseGate": {
+        "label": "ノイズゲート閾値",
+        "hint": "音量がこの値以下のときはピッチ検出を行いません（値が大きいほど感度が低くなります）"
+      }
+    }
+  },
   "start": {
     "instruction": "マイクを起動して開始します",
     "button": "開始",

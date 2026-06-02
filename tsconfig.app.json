@@ -21,8 +21,8 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
 
-    /* Path aliases */
-    "baseUrl": ".",
+    /* Path aliases (TS 5+/bundler mode resolves paths relative to this file,
+       so the deprecated baseUrl is not needed) */
     "paths": {
       "@/*": ["./src/*"]
     }
