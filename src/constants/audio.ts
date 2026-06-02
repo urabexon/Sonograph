@@ -30,6 +30,9 @@ export const PITCH_TIMEOUT_MS = 200;
 // RMS threshold below which pitch detection is skipped
 export const DEFAULT_NOISE_GATE_THRESHOLD = 0.01;
 
+// How many seconds of audio the recording ring buffer retains
+export const RECORDING_DURATION_SECONDS = 30;
+
 // AnalyserNode smoothing
 export const ANALYSER_SMOOTHING_PITCH = 0;
 export const ANALYSER_SMOOTHING_STEREO = 0.3;
