@@ -3,6 +3,13 @@ import type { Recording, RecordingMeta } from "@/types";
 // Recordings are kept for 7 days, then auto-pruned on the next load
 export const RECORDING_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
+// IndexedDB keys. Centralized so the write path and the read path can never drift apart
+export const RECORDING_LIST_KEY = "recording-list";
+
+export function recordingKey(id: string): string {
+  return `recording-${id}`;
+}
+
 // Absolute expiry timestamp for a recording created at `createdAt`
 export function expiresAtFrom(createdAt: number): number {
   return createdAt + RECORDING_TTL_MS;
