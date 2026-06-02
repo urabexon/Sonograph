@@ -6,10 +6,12 @@ import {
   RECORDING_TTL_MS,
   downloadFileName,
   expiresAtFrom,
+  formatDuration,
   isExpired,
   partitionByExpiry,
   recordingKey,
   sortByNewest,
+  timeRemaining,
   toRecordingMeta,
 } from "./recordingUtils";
 
@@ -86,6 +88,37 @@ describe("sortByNewest", () => {
     ];
     expect(sortByNewest(metas).map((m) => m.id)).toEqual(["b", "c", "a"]);
     expect(metas.map((m) => m.id)).toEqual(["a", "b", "c"]);
+  });
+});
+
+describe("formatDuration", () => {
+  it("formats seconds as m:ss with zero-padding", () => {
+    expect(formatDuration(0)).toBe("0:00");
+    expect(formatDuration(5)).toBe("0:05");
+    expect(formatDuration(65)).toBe("1:05");
+    expect(formatDuration(600)).toBe("10:00");
+  });
+
+  it("falls back to 0:00 for non-finite or negative input", () => {
+    expect(formatDuration(Infinity)).toBe("0:00");
+    expect(formatDuration(NaN)).toBe("0:00");
+    expect(formatDuration(-3)).toBe("0:00");
+  });
+});
+
+describe("timeRemaining", () => {
+  const HOUR = 60 * 60 * 1000;
+  const DAY = 24 * HOUR;
+
+  it("classifies by largest unit remaining", () => {
+    expect(timeRemaining(100, 200)).toEqual({ kind: "expired" });
+    expect(timeRemaining(3 * DAY, 0)).toEqual({ kind: "days", value: 3 });
+    expect(timeRemaining(5 * HOUR, 0)).toEqual({ kind: "hours", value: 5 });
+    expect(timeRemaining(30 * 60 * 1000, 0)).toEqual({ kind: "soon" });
+  });
+
+  it("treats exactly-now and sub-hour as soon (not expired)", () => {
+    expect(timeRemaining(0, 0)).toEqual({ kind: "soon" });
   });
 });
 
