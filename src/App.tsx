@@ -1,5 +1,8 @@
 import { memo, useCallback, useState } from "react";
 
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+
 import { ControlPanel } from "@/components/ControlPanel";
 import { Header } from "@/components/Header";
 import { PitchInfo } from "@/components/PitchInfo";
@@ -7,6 +10,7 @@ import { RecordingList } from "@/components/RecordingList";
 import { SettingsDialog } from "@/components/SettingsDialog";
 import { StartOverlay } from "@/components/StartOverlay";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 import { TunerDisplay } from "@/components/TunerDisplay";
 import { VolumeLevel } from "@/components/VolumeLevel";
 import { RECORDING_DURATION_SECONDS } from "@/constants/audio";
@@ -62,6 +66,7 @@ const TunerDisplayContainer = memo(function TunerDisplayContainer() {
 });
 
 function App() {
+  const { t } = useTranslation();
   const isActive = useIsActive();
   const { startAudio, stopAudio } = useAudioControls();
 
@@ -118,12 +123,39 @@ function App() {
   const handleSave = useCallback(async () => {
     setIsSaving(true);
     try {
-      await saveRecording();
-      await refresh();
+      const id = await saveRecording();
+      if (id) {
+        await refresh();
+        toast.success(t("toast.saveSuccess"));
+      } else {
+        toast.error(t("toast.saveEmpty"));
+      }
+    } catch {
+      toast.error(t("toast.saveError"));
     } finally {
       setIsSaving(false);
     }
-  }, [saveRecording, refresh]);
+  }, [saveRecording, refresh, t]);
+
+  const handleDelete = useCallback(
+    async (id: string) => {
+      const ok = await deleteRecording(id);
+      toast[ok ? "success" : "error"](
+        t(ok ? "toast.deleteSuccess" : "toast.deleteError"),
+      );
+    },
+    [deleteRecording, t],
+  );
+
+  const handleDownload = useCallback(
+    async (id: string, format: Parameters<typeof downloadRecording>[1]) => {
+      const ok = await downloadRecording(id, format);
+      toast[ok ? "success" : "error"](
+        t(ok ? "toast.downloadStarted" : "toast.downloadError"),
+      );
+    },
+    [downloadRecording, t],
+  );
 
   // Refresh the list right as the dialog opens
   const handleOpenRecordings = useCallback(() => {
@@ -148,8 +180,8 @@ function App() {
             open={recordingsOpen}
             onClose={() => setRecordingsOpen(false)}
             recordings={recordings}
-            onDelete={(id) => void deleteRecording(id)}
-            onDownload={(id, format) => void downloadRecording(id, format)}
+            onDelete={(id) => void handleDelete(id)}
+            onDownload={(id, format) => void handleDownload(id, format)}
             onPlay={(id) => void playRecording(id)}
             onStop={stopPlayback}
             onSeek={seek}
@@ -189,6 +221,7 @@ function App() {
             )}
           </main>
         </div>
+        <Toaster position="bottom-center" />
       </SettingsProvider>
     </ThemeProvider>
   );
