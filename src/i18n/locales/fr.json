@@ -92,6 +92,15 @@
     "download": "Télécharger",
     "delete": "Supprimer"
   },
+  "toast": {
+    "saveSuccess": "Enregistrement sauvegardé — disponible dans la liste.",
+    "saveEmpty": "Rien à sauvegarder pour l'instant",
+    "saveError": "Échec de la sauvegarde",
+    "deleteSuccess": "Supprimé",
+    "deleteError": "Échec de la suppression",
+    "downloadStarted": "Téléchargement démarré",
+    "downloadError": "Échec du téléchargement"
+  },
   "start": {
     "instruction": "Démarrez votre microphone pour commencer",
     "button": "Démarrer",

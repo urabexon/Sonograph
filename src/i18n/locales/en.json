@@ -92,6 +92,15 @@
     "download": "Download",
     "delete": "Delete"
   },
+  "toast": {
+    "saveSuccess": "Recording saved — find it in the recordings list.",
+    "saveEmpty": "Nothing to save yet",
+    "saveError": "Failed to save the recording",
+    "deleteSuccess": "Deleted",
+    "deleteError": "Failed to delete",
+    "downloadStarted": "Download started",
+    "downloadError": "Download failed"
+  },
   "start": {
     "instruction": "Start your microphone to begin",
     "button": "Start",
