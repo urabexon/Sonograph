@@ -72,6 +72,35 @@
       }
     }
   },
+  "recordings": {
+    "title": "録音一覧",
+    "description": "録音は7日間保存され、期限が切れると自動的に削除されます。",
+    "empty": "録音がありません",
+    "remaining": {
+      "expired": "期限切れ",
+      "days": "あと{{count}}日",
+      "hours": "あと{{count}}時間",
+      "soon": "まもなく期限切れ"
+    },
+    "format": {
+      "wav": "WAV（無圧縮）",
+      "mp3": "MP3"
+    },
+    "defaultBadge": "(デフォルト)",
+    "play": "再生",
+    "stop": "停止",
+    "download": "ダウンロード",
+    "delete": "削除"
+  },
+  "toast": {
+    "saveSuccess": "録音を保存しました。録音一覧から確認できます。",
+    "saveEmpty": "保存するデータがありません",
+    "saveError": "保存に失敗しました",
+    "deleteSuccess": "削除しました",
+    "deleteError": "削除に失敗しました",
+    "downloadStarted": "ダウンロードを開始しました",
+    "downloadError": "ダウンロードに失敗しました"
+  },
   "start": {
     "instruction": "マイクを起動して開始します",
     "button": "開始",

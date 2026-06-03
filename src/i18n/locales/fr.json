@@ -72,6 +72,35 @@
       }
     }
   },
+  "recordings": {
+    "title": "Enregistrements",
+    "description": "Les enregistrements sont conservés 7 jours, puis supprimés automatiquement.",
+    "empty": "Aucun enregistrement",
+    "remaining": {
+      "expired": "Expiré",
+      "days": "{{count}} j restants",
+      "hours": "{{count}} h restantes",
+      "soon": "Expire bientôt"
+    },
+    "format": {
+      "wav": "WAV (non compressé)",
+      "mp3": "MP3"
+    },
+    "defaultBadge": "(par défaut)",
+    "play": "Lire",
+    "stop": "Arrêter",
+    "download": "Télécharger",
+    "delete": "Supprimer"
+  },
+  "toast": {
+    "saveSuccess": "Enregistrement sauvegardé — disponible dans la liste.",
+    "saveEmpty": "Rien à sauvegarder pour l'instant",
+    "saveError": "Échec de la sauvegarde",
+    "deleteSuccess": "Supprimé",
+    "deleteError": "Échec de la suppression",
+    "downloadStarted": "Téléchargement démarré",
+    "downloadError": "Échec du téléchargement"
+  },
   "start": {
     "instruction": "Démarrez votre microphone pour commencer",
     "button": "Démarrer",

@@ -43,6 +43,35 @@ export type PitchHistoryEntry = {
   readonly timestamp: number;
 };
 
+// A saved recording, persisted to IndexedDB
+// drives the 7-day auto-cleanup.
+export type Recording = {
+  readonly id: string;
+  readonly createdAt: number;
+  readonly expiresAt: number;
+  readonly duration: number;
+  readonly mimeType: string;
+  readonly audioBlob: Blob;
+  readonly pitchData: readonly PitchHistoryEntry[];
+};
+
+// Lightweight view of a recording for the list UI
+export type RecordingMeta = {
+  readonly id: string;
+  readonly createdAt: number;
+  readonly expiresAt: number;
+  readonly duration: number;
+};
+
+// Download format for a recording
+// Recordings are always stored as WAV, MP3 conversion is supported
+export type AudioFormat = "wav" | "mp3";
+
+export const AUDIO_FORMAT_EXTENSIONS: Record<AudioFormat, string> = {
+  wav: "wav",
+  mp3: "mp3",
+};
+
 // Volume level for one channel
 export type ChannelVolume = {
   readonly rms: number;
