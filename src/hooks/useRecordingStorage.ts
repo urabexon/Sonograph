@@ -19,11 +19,12 @@ type RecordingStorageResult = {
   readonly isLoading: boolean;
   readonly isConverting: boolean;
   readonly refresh: () => Promise<void>;
-  readonly deleteRecording: (id: string) => Promise<void>;
+  // Return whether the action succeeded so the UI can show accurate feedback.
+  readonly deleteRecording: (id: string) => Promise<boolean>;
   readonly downloadRecording: (
     id: string,
     format?: AudioFormat,
-  ) => Promise<void>;
+  ) => Promise<boolean>;
   readonly playRecording: (id: string) => Promise<void>;
   readonly stopPlayback: () => void;
   readonly seek: (time: number) => void;
@@ -103,7 +104,7 @@ export function useRecordingStorage(): RecordingStorageResult {
   }, []);
 
   const deleteRecording = useCallback(
-    async (id: string): Promise<void> => {
+    async (id: string): Promise<boolean> => {
       if (playingId === id) cleanupPlayback();
       try {
         await del(recordingKey(id));
@@ -112,23 +113,24 @@ export function useRecordingStorage(): RecordingStorageResult {
           RECORDING_LIST_KEY,
           ids.filter((item) => item !== id),
         );
+        setRecordings((current) => current.filter((r) => r.id !== id));
+        return true;
       } catch {
-        // Ignore: the optimistic UI update below still reflects intent.
+        return false;
       }
-      setRecordings((current) => current.filter((r) => r.id !== id));
     },
     [playingId, cleanupPlayback],
   );
 
   const downloadRecording = useCallback(
-    async (id: string, format: AudioFormat = "wav"): Promise<void> => {
+    async (id: string, format: AudioFormat = "wav"): Promise<boolean> => {
       let recording: Recording | undefined;
       try {
         recording = await get<Recording>(recordingKey(id));
       } catch {
-        return;
+        return false;
       }
-      if (!recording) return;
+      if (!recording) return false;
 
       setIsConverting(true);
       try {
@@ -144,8 +146,10 @@ export function useRecordingStorage(): RecordingStorageResult {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+        return true;
       } catch {
         // Decode/encode failed: nothing downloaded.
+        return false;
       } finally {
         setIsConverting(false);
       }
