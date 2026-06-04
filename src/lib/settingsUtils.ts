@@ -1,8 +1,9 @@
 import {
   DEFAULT_ADVANCED_SETTINGS,
   DEFAULT_SETTINGS,
-  type AdvancedSettings,
   type Accidental,
+  type AdvancedSettings,
+  type AudioFormat,
   type Notation,
   type Settings,
   type Temperament,
@@ -23,6 +24,12 @@ function sanitizeAccidental(value: unknown): Accidental {
   return value === "sharp" || value === "flat"
     ? value
     : DEFAULT_SETTINGS.accidental;
+}
+
+function sanitizeAudioFormat(value: unknown): AudioFormat {
+  return value === "wav" || value === "mp3"
+    ? value
+    : DEFAULT_SETTINGS.audioFormat;
 }
 
 function sanitizeTemperament(value: unknown): Temperament {
@@ -86,6 +93,7 @@ export function sanitizeSettings(value: unknown): Settings {
   return {
     notation: sanitizeNotation(v.notation),
     accidental: sanitizeAccidental(v.accidental),
+    audioFormat: sanitizeAudioFormat(v.audioFormat),
     advanced: sanitizeAdvanced(v.advanced),
   };
 }
