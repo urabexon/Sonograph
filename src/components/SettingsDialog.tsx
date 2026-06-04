@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { useSettings } from "@/hooks/useSettings";
 import type { Accidental, AudioFormat, Notation } from "@/types";
 import { getSupportedFormats } from "@/utils/audioConverter";
@@ -59,6 +60,15 @@ export const SettingsDialog = memo(function SettingsDialog({
     (value: string) => {
       update((draft) => {
         draft.audioFormat = value as AudioFormat;
+      });
+    },
+    [update],
+  );
+
+  const handleAutoStartChange = useCallback(
+    (checked: boolean) => {
+      update((draft) => {
+        draft.autoStart = checked;
       });
     },
     [update],
@@ -134,6 +144,21 @@ export const SettingsDialog = memo(function SettingsDialog({
             </Select>
             <p className="text-xs text-muted-foreground">
               {t("settings.audioFormat.hint")}
+            </p>
+          </div>
+          <div className="space-y-1">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="auto-start">
+                {t("settings.autoStart.label")}
+              </Label>
+              <Switch
+                id="auto-start"
+                checked={state.autoStart}
+                onCheckedChange={handleAutoStartChange}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {t("settings.autoStart.hint")}
             </p>
           </div>
           <div className="pt-2 border-t">
