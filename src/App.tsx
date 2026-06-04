@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useState, type ReactNode } from "react";
 
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -26,11 +26,21 @@ import { useMicrophoneDevices } from "@/hooks/useMicrophoneDevices";
 import { useRecordingBuffer } from "@/hooks/useRecordingBuffer";
 import { useRecordingStorage } from "@/hooks/useRecordingStorage";
 import { SettingsProvider, useSettings } from "@/hooks/useSettings";
+import type { AudioFormat } from "@/types";
 
 function SettingsAudioBridge() {
   const { state } = useSettings();
   useNoiseGateEffect(state.advanced.noiseGateThreshold);
   return null;
+}
+
+function WithDefaultFormat({
+  children,
+}: {
+  readonly children: (format: AudioFormat) => ReactNode;
+}) {
+  const { state } = useSettings();
+  return <>{children(state.audioFormat)}</>;
 }
 
 const PitchInfoContainer = memo(function PitchInfoContainer() {
@@ -176,21 +186,25 @@ function App() {
             open={settingsOpen}
             onClose={() => setSettingsOpen(false)}
           />
-          <RecordingList
-            open={recordingsOpen}
-            onClose={() => setRecordingsOpen(false)}
-            recordings={recordings}
-            onDelete={(id) => void handleDelete(id)}
-            onDownload={(id, format) => void handleDownload(id, format)}
-            onPlay={(id) => void playRecording(id)}
-            onStop={stopPlayback}
-            onSeek={seek}
-            playingId={playingId}
-            playbackTime={playbackTime}
-            playbackDuration={playbackDuration}
-            isConverting={isConverting}
-            defaultFormat="wav"
-          />
+          <WithDefaultFormat>
+            {(defaultFormat) => (
+              <RecordingList
+                open={recordingsOpen}
+                onClose={() => setRecordingsOpen(false)}
+                recordings={recordings}
+                onDelete={(id) => void handleDelete(id)}
+                onDownload={(id, format) => void handleDownload(id, format)}
+                onPlay={(id) => void playRecording(id)}
+                onStop={stopPlayback}
+                onSeek={seek}
+                playingId={playingId}
+                playbackTime={playbackTime}
+                playbackDuration={playbackDuration}
+                isConverting={isConverting}
+                defaultFormat={defaultFormat}
+              />
+            )}
+          </WithDefaultFormat>
           <main className="flex-1 flex flex-col p-4 gap-4 max-w-4xl mx-auto w-full">
             {isActive && (
               <>
