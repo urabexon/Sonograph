@@ -110,6 +110,7 @@ export type Settings = {
   readonly notation: Notation;
   readonly accidental: Accidental;
   readonly audioFormat: AudioFormat;
+  readonly autoStart: boolean; // start the mic automatically on the next load
   readonly advanced: AdvancedSettings;
 };
 
@@ -117,5 +118,6 @@ export const DEFAULT_SETTINGS: Settings = {
   notation: "letter",
   accidental: "sharp",
   audioFormat: "wav",
+  autoStart: false,
   advanced: DEFAULT_ADVANCED_SETTINGS,
 };
