@@ -24,6 +24,7 @@ describe("sanitizeSettings", () => {
       notation: "solfege",
       accidental: "flat",
       audioFormat: "mp3",
+      autoStart: true,
       advanced: {
         referenceFrequency: 442,
         transposition: "Bb",
@@ -40,6 +41,13 @@ describe("sanitizeSettings", () => {
       DEFAULT_SETTINGS.audioFormat,
     );
     expect(sanitizeSettings({ audioFormat: "mp3" }).audioFormat).toBe("mp3");
+  });
+
+  it("accepts boolean autoStart and falls back otherwise", () => {
+    expect(sanitizeSettings({ autoStart: true }).autoStart).toBe(true);
+    expect(sanitizeSettings({ autoStart: "yes" }).autoStart).toBe(
+      DEFAULT_SETTINGS.autoStart,
+    );
   });
 
   it("falls back to default for an unknown notation", () => {
