@@ -34,6 +34,10 @@
       "sharp": "♯ Sharp",
       "flat": "♭ Flat"
     },
+    "audioFormat": {
+      "label": "Export format",
+      "hint": "Default format when downloading recordings"
+    },
     "advanced": {
       "open": "Advanced settings",
       "title": "Advanced settings",

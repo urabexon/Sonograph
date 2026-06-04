@@ -34,6 +34,10 @@
       "sharp": "♯ Dièse",
       "flat": "♭ Bémol"
     },
+    "audioFormat": {
+      "label": "Format d'export",
+      "hint": "Format par défaut lors du téléchargement"
+    },
     "advanced": {
       "open": "Paramètres avancés",
       "title": "Paramètres avancés",
