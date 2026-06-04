@@ -109,11 +109,13 @@ export const DEFAULT_ADVANCED_SETTINGS: AdvancedSettings = {
 export type Settings = {
   readonly notation: Notation;
   readonly accidental: Accidental;
+  readonly audioFormat: AudioFormat;
   readonly advanced: AdvancedSettings;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
   notation: "letter",
   accidental: "sharp",
+  audioFormat: "wav",
   advanced: DEFAULT_ADVANCED_SETTINGS,
 };
