@@ -1,4 +1,11 @@
-import { memo, useCallback, useState, type ReactNode } from "react";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -31,6 +38,19 @@ import type { AudioFormat } from "@/types";
 function SettingsAudioBridge() {
   const { state } = useSettings();
   useNoiseGateEffect(state.advanced.noiseGateThreshold);
+  return null;
+}
+
+function AutoStartBridge() {
+  const { state } = useSettings();
+  const { startAudio } = useAudioControls();
+  const autoStartRef = useRef(state.autoStart);
+  const didRun = useRef(false);
+  useEffect(() => {
+    if (didRun.current) return;
+    didRun.current = true;
+    if (autoStartRef.current) void startAudio();
+  }, [startAudio]);
   return null;
 }
 
@@ -177,6 +197,7 @@ function App() {
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <SettingsProvider>
         <SettingsAudioBridge />
+        <AutoStartBridge />
         <div className="min-h-svh flex flex-col bg-background text-foreground">
           <Header
             onOpenSettings={() => setSettingsOpen(true)}
