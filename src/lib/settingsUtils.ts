@@ -32,6 +32,10 @@ function sanitizeAudioFormat(value: unknown): AudioFormat {
     : DEFAULT_SETTINGS.audioFormat;
 }
 
+function sanitizeAutoStart(value: unknown): boolean {
+  return typeof value === "boolean" ? value : DEFAULT_SETTINGS.autoStart;
+}
+
 function sanitizeTemperament(value: unknown): Temperament {
   return value === "equal" || value === "just"
     ? value
@@ -94,6 +98,7 @@ export function sanitizeSettings(value: unknown): Settings {
     notation: sanitizeNotation(v.notation),
     accidental: sanitizeAccidental(v.accidental),
     audioFormat: sanitizeAudioFormat(v.audioFormat),
+    autoStart: sanitizeAutoStart(v.autoStart),
     advanced: sanitizeAdvanced(v.advanced),
   };
 }
