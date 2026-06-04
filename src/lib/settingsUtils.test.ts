@@ -25,6 +25,7 @@ describe("sanitizeSettings", () => {
       accidental: "flat",
       audioFormat: "mp3",
       autoStart: true,
+      recordingDuration: 90,
       advanced: {
         referenceFrequency: 442,
         transposition: "Bb",
@@ -48,6 +49,18 @@ describe("sanitizeSettings", () => {
     expect(sanitizeSettings({ autoStart: "yes" }).autoStart).toBe(
       DEFAULT_SETTINGS.autoStart,
     );
+  });
+
+  it("accepts a valid recordingDuration and falls back otherwise", () => {
+    expect(sanitizeSettings({ recordingDuration: 120 }).recordingDuration).toBe(
+      120,
+    );
+    expect(sanitizeSettings({ recordingDuration: 0 }).recordingDuration).toBe(
+      DEFAULT_SETTINGS.recordingDuration,
+    );
+    expect(
+      sanitizeSettings({ recordingDuration: 30.5 }).recordingDuration,
+    ).toBe(DEFAULT_SETTINGS.recordingDuration);
   });
 
   it("falls back to default for an unknown notation", () => {
