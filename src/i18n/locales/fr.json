@@ -38,6 +38,10 @@
       "label": "Format d'export",
       "hint": "Format par défaut lors du téléchargement"
     },
+    "autoStart": {
+      "label": "Démarrer automatiquement la prochaine fois",
+      "hint": "Démarre le microphone automatiquement à la prochaine visite"
+    },
     "advanced": {
       "open": "Paramètres avancés",
       "title": "Paramètres avancés",

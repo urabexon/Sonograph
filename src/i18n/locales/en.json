@@ -38,6 +38,10 @@
       "label": "Export format",
       "hint": "Default format when downloading recordings"
     },
+    "autoStart": {
+      "label": "Start automatically next time",
+      "hint": "Starts the microphone automatically on your next visit"
+    },
     "advanced": {
       "open": "Advanced settings",
       "title": "Advanced settings",
