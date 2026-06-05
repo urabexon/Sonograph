@@ -116,7 +116,13 @@
   },
   "control": {
     "save": "Enregistrer",
-    "stop": "Arrêter"
+    "stop": "Arrêter",
+    "durationLabel": "Durée d'enregistrement",
+    "duration": {
+      "seconds": "{{value}} s",
+      "minutes": "{{value}} min",
+      "minutesSeconds": "{{mins}} min {{secs}} s"
+    }
   },
   "mic": {
     "placeholder": "Choisir un microphone",
