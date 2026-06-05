@@ -34,6 +34,14 @@
       "sharp": "♯ シャープ",
       "flat": "♭ フラット"
     },
+    "audioFormat": {
+      "label": "保存フォーマット",
+      "hint": "ダウンロード時の既定の形式です"
+    },
+    "autoStart": {
+      "label": "次回から自動で開始する",
+      "hint": "次回アクセス時にマイクを自動的に起動します"
+    },
     "advanced": {
       "open": "高度な設定",
       "title": "高度な設定",
@@ -108,7 +116,13 @@
   },
   "control": {
     "save": "録音を保存",
-    "stop": "停止"
+    "stop": "停止",
+    "durationLabel": "録音時間",
+    "duration": {
+      "seconds": "{{value}}秒",
+      "minutes": "{{value}}分",
+      "minutesSeconds": "{{mins}}分{{secs}}秒"
+    }
   },
   "mic": {
     "placeholder": "マイクを選択",

@@ -34,6 +34,14 @@
       "sharp": "♯ Sharp",
       "flat": "♭ Flat"
     },
+    "audioFormat": {
+      "label": "Export format",
+      "hint": "Default format when downloading recordings"
+    },
+    "autoStart": {
+      "label": "Start automatically next time",
+      "hint": "Starts the microphone automatically on your next visit"
+    },
     "advanced": {
       "open": "Advanced settings",
       "title": "Advanced settings",
@@ -108,7 +116,13 @@
   },
   "control": {
     "save": "Save recording",
-    "stop": "Stop"
+    "stop": "Stop",
+    "durationLabel": "Recording length",
+    "duration": {
+      "seconds": "{{value}}s",
+      "minutes": "{{value}}m",
+      "minutesSeconds": "{{mins}}m{{secs}}s"
+    }
   },
   "mic": {
     "placeholder": "Select microphone",

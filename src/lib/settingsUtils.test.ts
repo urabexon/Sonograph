@@ -23,6 +23,9 @@ describe("sanitizeSettings", () => {
     const input = {
       notation: "solfege",
       accidental: "flat",
+      audioFormat: "mp3",
+      autoStart: true,
+      recordingDuration: 90,
       advanced: {
         referenceFrequency: 442,
         transposition: "Bb",
@@ -32,6 +35,32 @@ describe("sanitizeSettings", () => {
       },
     };
     expect(sanitizeSettings(input)).toEqual(input);
+  });
+
+  it("falls back to default for an unknown audioFormat", () => {
+    expect(sanitizeSettings({ audioFormat: "ogg" }).audioFormat).toBe(
+      DEFAULT_SETTINGS.audioFormat,
+    );
+    expect(sanitizeSettings({ audioFormat: "mp3" }).audioFormat).toBe("mp3");
+  });
+
+  it("accepts boolean autoStart and falls back otherwise", () => {
+    expect(sanitizeSettings({ autoStart: true }).autoStart).toBe(true);
+    expect(sanitizeSettings({ autoStart: "yes" }).autoStart).toBe(
+      DEFAULT_SETTINGS.autoStart,
+    );
+  });
+
+  it("accepts a valid recordingDuration and falls back otherwise", () => {
+    expect(sanitizeSettings({ recordingDuration: 120 }).recordingDuration).toBe(
+      120,
+    );
+    expect(sanitizeSettings({ recordingDuration: 0 }).recordingDuration).toBe(
+      DEFAULT_SETTINGS.recordingDuration,
+    );
+    expect(
+      sanitizeSettings({ recordingDuration: 30.5 }).recordingDuration,
+    ).toBe(DEFAULT_SETTINGS.recordingDuration);
   });
 
   it("falls back to default for an unknown notation", () => {
@@ -71,9 +100,9 @@ describe("sanitizeSettings", () => {
       },
     });
     expect(result.notation).toBe("solfege");
-    expect(result.accidental).toBe("sharp"); // defaulted
+    expect(result.accidental).toBe("sharp");
     expect(result.advanced.referenceFrequency).toBe(442);
-    expect(result.advanced.transposition).toBe("C"); // defaulted
+    expect(result.advanced.transposition).toBe("C");
     expect(result.advanced.centThreshold).toBe(7);
   });
 });

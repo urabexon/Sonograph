@@ -1,13 +1,16 @@
 import {
   DEFAULT_ADVANCED_SETTINGS,
   DEFAULT_SETTINGS,
-  type AdvancedSettings,
   type Accidental,
+  type AdvancedSettings,
+  type AudioFormat,
   type Notation,
   type Settings,
   type Temperament,
   type Transposition,
 } from "@/types";
+
+import { isValidDuration } from "./recordingUtils";
 
 // Each sanitizer accepts an `unknown` (anything from localStorage) and either
 // returns a valid value or falls back to the default. Per-field isolation keeps
@@ -23,6 +26,22 @@ function sanitizeAccidental(value: unknown): Accidental {
   return value === "sharp" || value === "flat"
     ? value
     : DEFAULT_SETTINGS.accidental;
+}
+
+function sanitizeAudioFormat(value: unknown): AudioFormat {
+  return value === "wav" || value === "mp3"
+    ? value
+    : DEFAULT_SETTINGS.audioFormat;
+}
+
+function sanitizeAutoStart(value: unknown): boolean {
+  return typeof value === "boolean" ? value : DEFAULT_SETTINGS.autoStart;
+}
+
+function sanitizeRecordingDuration(value: unknown): number {
+  return typeof value === "number" && isValidDuration(value)
+    ? value
+    : DEFAULT_SETTINGS.recordingDuration;
 }
 
 function sanitizeTemperament(value: unknown): Temperament {
@@ -86,6 +105,9 @@ export function sanitizeSettings(value: unknown): Settings {
   return {
     notation: sanitizeNotation(v.notation),
     accidental: sanitizeAccidental(v.accidental),
+    audioFormat: sanitizeAudioFormat(v.audioFormat),
+    autoStart: sanitizeAutoStart(v.autoStart),
+    recordingDuration: sanitizeRecordingDuration(v.recordingDuration),
     advanced: sanitizeAdvanced(v.advanced),
   };
 }

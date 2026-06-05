@@ -13,8 +13,17 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { useSettings } from "@/hooks/useSettings";
-import type { Accidental, Notation } from "@/types";
+import type { Accidental, AudioFormat, Notation } from "@/types";
+import { getSupportedFormats } from "@/utils/audioConverter";
 
 type SettingsDialogProps = {
   readonly open: boolean;
@@ -47,13 +56,32 @@ export const SettingsDialog = memo(function SettingsDialog({
     [update],
   );
 
+  const handleAudioFormatChange = useCallback(
+    (value: string) => {
+      update((draft) => {
+        draft.audioFormat = value as AudioFormat;
+      });
+    },
+    [update],
+  );
+
+  const handleAutoStartChange = useCallback(
+    (checked: boolean) => {
+      update((draft) => {
+        draft.autoStart = checked;
+      });
+    },
+    [update],
+  );
+
+  const formats = getSupportedFormats();
+
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{t("settings.title")}</DialogTitle>
         </DialogHeader>
-
         <div className="space-y-6">
           <div className="space-y-3">
             <Label>{t("settings.notation.label")}</Label>
@@ -76,7 +104,6 @@ export const SettingsDialog = memo(function SettingsDialog({
               </div>
             </RadioGroup>
           </div>
-
           <div className="space-y-3">
             <Label>{t("settings.accidental.label")}</Label>
             <RadioGroup
@@ -98,7 +125,42 @@ export const SettingsDialog = memo(function SettingsDialog({
               </div>
             </RadioGroup>
           </div>
-
+          <div className="space-y-3">
+            <Label>{t("settings.audioFormat.label")}</Label>
+            <Select
+              value={state.audioFormat}
+              onValueChange={handleAudioFormatChange}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {formats.map((format) => (
+                  <SelectItem key={format} value={format}>
+                    {t(`recordings.format.${format}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              {t("settings.audioFormat.hint")}
+            </p>
+          </div>
+          <div className="space-y-1">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="auto-start">
+                {t("settings.autoStart.label")}
+              </Label>
+              <Switch
+                id="auto-start"
+                checked={state.autoStart}
+                onCheckedChange={handleAutoStartChange}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {t("settings.autoStart.hint")}
+            </p>
+          </div>
           <div className="pt-2 border-t">
             <Button
               variant="ghost"
@@ -111,7 +173,6 @@ export const SettingsDialog = memo(function SettingsDialog({
           </div>
         </div>
       </DialogContent>
-
       <AdvancedSettingsDialog
         open={showAdvanced}
         onClose={() => setShowAdvanced(false)}

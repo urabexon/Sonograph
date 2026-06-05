@@ -1,19 +1,17 @@
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
 import { ControlPanel } from "@/components/ControlPanel";
 import { Header } from "@/components/Header";
 import { PitchInfo } from "@/components/PitchInfo";
 import { RecordingList } from "@/components/RecordingList";
 import { SettingsDialog } from "@/components/SettingsDialog";
 import { StartOverlay } from "@/components/StartOverlay";
-import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { TunerDisplay } from "@/components/TunerDisplay";
 import { VolumeLevel } from "@/components/VolumeLevel";
-import { RECORDING_DURATION_SECONDS } from "@/constants/audio";
+import { RECORDING_DURATION_PRESETS } from "@/constants/audio";
 import {
   useAudioControls,
   useAudioStream,
@@ -25,13 +23,7 @@ import {
 import { useMicrophoneDevices } from "@/hooks/useMicrophoneDevices";
 import { useRecordingBuffer } from "@/hooks/useRecordingBuffer";
 import { useRecordingStorage } from "@/hooks/useRecordingStorage";
-import { SettingsProvider, useSettings } from "@/hooks/useSettings";
-
-function SettingsAudioBridge() {
-  const { state } = useSettings();
-  useNoiseGateEffect(state.advanced.noiseGateThreshold);
-  return null;
-}
+import { useSettings } from "@/hooks/useSettings";
 
 const PitchInfoContainer = memo(function PitchInfoContainer() {
   const { currentPitch } = usePitchData();
@@ -67,21 +59,28 @@ const TunerDisplayContainer = memo(function TunerDisplayContainer() {
 
 function App() {
   const { t } = useTranslation();
+  const { state, update } = useSettings();
   const isActive = useIsActive();
   const { startAudio, stopAudio } = useAudioControls();
+
+  // Push the noise gate (lives outside React state) into the audio pipeline
+  useNoiseGateEffect(state.advanced.noiseGateThreshold);
+
+  const autoStartRef = useRef(state.autoStart);
+  const didAutoStart = useRef(false);
+  useEffect(() => {
+    if (didAutoStart.current) return;
+    didAutoStart.current = true;
+    if (autoStartRef.current) void startAudio();
+  }, [startAudio]);
 
   const { devices, isLoading, error, refreshDevices } = useMicrophoneDevices();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [recordingsOpen, setRecordingsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [userPickedDeviceId, setUserPickedDeviceId] = useState("");
-
-  // Continuously buffer the active mic stream so it can be saved
   const stream = useAudioStream();
-  const { saveRecording } = useRecordingBuffer(
-    stream,
-    RECORDING_DURATION_SECONDS,
-  );
+  const { saveRecording } = useRecordingBuffer(stream, state.recordingDuration);
   const {
     recordings,
     isConverting,
@@ -95,7 +94,7 @@ function App() {
     playbackTime,
     playbackDuration,
   } = useRecordingStorage();
-  // Auto-pick the first available device until the user explicitly chooses one.
+  // Auto-pick the first available device until the user explicitly chooses one
   const selectedDeviceId = userPickedDeviceId || devices[0]?.deviceId || "";
 
   const handleStart = useCallback(() => {
@@ -163,67 +162,76 @@ function App() {
     setRecordingsOpen(true);
   }, [refresh]);
 
+  const handleDurationChange = useCallback(
+    (seconds: number) => {
+      update((draft) => {
+        draft.recordingDuration = seconds;
+      });
+    },
+    [update],
+  );
+
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <SettingsProvider>
-        <SettingsAudioBridge />
-        <div className="min-h-svh flex flex-col bg-background text-foreground">
-          <Header
-            onOpenSettings={() => setSettingsOpen(true)}
-            onOpenRecordings={handleOpenRecordings}
-          />
-          <SettingsDialog
-            open={settingsOpen}
-            onClose={() => setSettingsOpen(false)}
-          />
-          <RecordingList
-            open={recordingsOpen}
-            onClose={() => setRecordingsOpen(false)}
-            recordings={recordings}
-            onDelete={(id) => void handleDelete(id)}
-            onDownload={(id, format) => void handleDownload(id, format)}
-            onPlay={(id) => void playRecording(id)}
-            onStop={stopPlayback}
-            onSeek={seek}
-            playingId={playingId}
-            playbackTime={playbackTime}
-            playbackDuration={playbackDuration}
-            isConverting={isConverting}
-            defaultFormat="wav"
-          />
-          <main className="flex-1 flex flex-col p-4 gap-4 max-w-4xl mx-auto w-full">
-            {isActive && (
-              <>
-                <PitchInfoContainer />
-                <VolumeLevelContainer />
-              </>
-            )}
-            <div className="relative flex-1 min-h-32">
-              <TunerDisplayContainer />
-              {!isActive && (
-                <StartOverlay
-                  onStart={handleStart}
-                  devices={devices}
-                  selectedDeviceId={selectedDeviceId}
-                  onDeviceChange={handleDeviceChange}
-                  onRefreshDevices={handleRefreshDevices}
-                  isLoading={isLoading}
-                  error={error}
-                />
-              )}
-            </div>
-            {isActive && (
-              <ControlPanel
-                onStop={handleStop}
-                onSave={() => void handleSave()}
-                isSaving={isSaving}
+    <>
+      <div className="min-h-svh flex flex-col bg-background text-foreground">
+        <Header
+          onOpenSettings={() => setSettingsOpen(true)}
+          onOpenRecordings={handleOpenRecordings}
+        />
+        <SettingsDialog
+          open={settingsOpen}
+          onClose={() => setSettingsOpen(false)}
+        />
+        <RecordingList
+          open={recordingsOpen}
+          onClose={() => setRecordingsOpen(false)}
+          recordings={recordings}
+          onDelete={(id) => void handleDelete(id)}
+          onDownload={(id, format) => void handleDownload(id, format)}
+          onPlay={(id) => void playRecording(id)}
+          onStop={stopPlayback}
+          onSeek={seek}
+          playingId={playingId}
+          playbackTime={playbackTime}
+          playbackDuration={playbackDuration}
+          isConverting={isConverting}
+          defaultFormat={state.audioFormat}
+        />
+        <main className="flex-1 flex flex-col p-4 gap-4 max-w-4xl mx-auto w-full">
+          {isActive && (
+            <>
+              <PitchInfoContainer />
+              <VolumeLevelContainer />
+            </>
+          )}
+          <div className="relative flex-1 min-h-32">
+            <TunerDisplayContainer />
+            {!isActive && (
+              <StartOverlay
+                onStart={handleStart}
+                devices={devices}
+                selectedDeviceId={selectedDeviceId}
+                onDeviceChange={handleDeviceChange}
+                onRefreshDevices={handleRefreshDevices}
+                isLoading={isLoading}
+                error={error}
               />
             )}
-          </main>
-        </div>
-        <Toaster position="bottom-center" />
-      </SettingsProvider>
-    </ThemeProvider>
+          </div>
+          {isActive && (
+            <ControlPanel
+              onStop={handleStop}
+              onSave={() => void handleSave()}
+              isSaving={isSaving}
+              recordingDuration={state.recordingDuration}
+              durationPresets={RECORDING_DURATION_PRESETS}
+              onDurationChange={handleDurationChange}
+            />
+          )}
+        </main>
+      </div>
+      <Toaster position="bottom-center" />
+    </>
   );
 }
 

@@ -34,6 +34,14 @@
       "sharp": "♯ Dièse",
       "flat": "♭ Bémol"
     },
+    "audioFormat": {
+      "label": "Format d'export",
+      "hint": "Format par défaut lors du téléchargement"
+    },
+    "autoStart": {
+      "label": "Démarrer automatiquement la prochaine fois",
+      "hint": "Démarre le microphone automatiquement à la prochaine visite"
+    },
     "advanced": {
       "open": "Paramètres avancés",
       "title": "Paramètres avancés",
@@ -108,7 +116,13 @@
   },
   "control": {
     "save": "Enregistrer",
-    "stop": "Arrêter"
+    "stop": "Arrêter",
+    "durationLabel": "Durée d'enregistrement",
+    "duration": {
+      "seconds": "{{value}} s",
+      "minutes": "{{value}} min",
+      "minutesSeconds": "{{mins}} min {{secs}} s"
+    }
   },
   "mic": {
     "placeholder": "Choisir un microphone",

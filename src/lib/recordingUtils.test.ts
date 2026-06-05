@@ -8,6 +8,7 @@ import {
   expiresAtFrom,
   formatDuration,
   isExpired,
+  isValidDuration,
   partitionByExpiry,
   recordingKey,
   sortByNewest,
@@ -88,6 +89,22 @@ describe("sortByNewest", () => {
     ];
     expect(sortByNewest(metas).map((m) => m.id)).toEqual(["b", "c", "a"]);
     expect(metas.map((m) => m.id)).toEqual(["a", "b", "c"]);
+  });
+});
+
+describe("isValidDuration", () => {
+  it("accepts whole seconds within bounds", () => {
+    expect(isValidDuration(1)).toBe(true);
+    expect(isValidDuration(30)).toBe(true);
+    expect(isValidDuration(600)).toBe(true);
+  });
+
+  it("rejects out-of-range, fractional and non-finite values", () => {
+    expect(isValidDuration(0)).toBe(false);
+    expect(isValidDuration(601)).toBe(false);
+    expect(isValidDuration(30.5)).toBe(false);
+    expect(isValidDuration(Infinity)).toBe(false);
+    expect(isValidDuration(NaN)).toBe(false);
   });
 });
 

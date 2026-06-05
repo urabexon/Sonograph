@@ -109,11 +109,17 @@ export const DEFAULT_ADVANCED_SETTINGS: AdvancedSettings = {
 export type Settings = {
   readonly notation: Notation;
   readonly accidental: Accidental;
+  readonly audioFormat: AudioFormat;
+  readonly autoStart: boolean; // start the mic automatically on the next load
+  readonly recordingDuration: number;
   readonly advanced: AdvancedSettings;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
   notation: "letter",
   accidental: "sharp",
+  audioFormat: "wav",
+  autoStart: false,
+  recordingDuration: 30,
   advanced: DEFAULT_ADVANCED_SETTINGS,
 };

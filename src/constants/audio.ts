@@ -30,8 +30,15 @@ export const PITCH_TIMEOUT_MS = 200;
 // RMS threshold below which pitch detection is skipped
 export const DEFAULT_NOISE_GATE_THRESHOLD = 0.01;
 
-// How many seconds of audio the recording ring buffer retains
+// Default seconds of audio the recording ring buffer retains
 export const RECORDING_DURATION_SECONDS = 30;
+
+// Bounds and quick-pick presets for the configurable recording duration
+export const RECORDING_DURATION_MIN = 1; // 1 second
+export const RECORDING_DURATION_MAX = 600; // 10 minutes
+export const RECORDING_DURATION_PRESETS: readonly number[] = [
+  15, 30, 60, 90, 120, 180,
+];
 
 // AnalyserNode smoothing
 export const ANALYSER_SMOOTHING_PITCH = 0;

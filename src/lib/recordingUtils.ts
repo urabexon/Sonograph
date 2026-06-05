@@ -1,4 +1,17 @@
+import {
+  RECORDING_DURATION_MAX,
+  RECORDING_DURATION_MIN,
+} from "@/constants/audio";
 import type { Recording, RecordingMeta } from "@/types";
+
+// A recording duration must be a whole number within the allowed range
+export function isValidDuration(seconds: number): boolean {
+  return (
+    Number.isInteger(seconds) &&
+    seconds >= RECORDING_DURATION_MIN &&
+    seconds <= RECORDING_DURATION_MAX
+  );
+}
 
 // Recordings are kept for 7 days, then auto-pruned on the next load
 export const RECORDING_TTL_MS = 7 * 24 * 60 * 60 * 1000;
