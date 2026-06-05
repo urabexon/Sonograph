@@ -11,6 +11,7 @@ import { StartOverlay } from "@/components/StartOverlay";
 import { Toaster } from "@/components/ui/sonner";
 import { TunerDisplay } from "@/components/TunerDisplay";
 import { VolumeLevel } from "@/components/VolumeLevel";
+import { RECORDING_DURATION_PRESETS } from "@/constants/audio";
 import {
   useAudioControls,
   useAudioStream,
@@ -58,7 +59,7 @@ const TunerDisplayContainer = memo(function TunerDisplayContainer() {
 
 function App() {
   const { t } = useTranslation();
-  const { state } = useSettings();
+  const { state, update } = useSettings();
   const isActive = useIsActive();
   const { startAudio, stopAudio } = useAudioControls();
 
@@ -161,6 +162,15 @@ function App() {
     setRecordingsOpen(true);
   }, [refresh]);
 
+  const handleDurationChange = useCallback(
+    (seconds: number) => {
+      update((draft) => {
+        draft.recordingDuration = seconds;
+      });
+    },
+    [update],
+  );
+
   return (
     <>
       <div className="min-h-svh flex flex-col bg-background text-foreground">
@@ -213,6 +223,9 @@ function App() {
               onStop={handleStop}
               onSave={() => void handleSave()}
               isSaving={isSaving}
+              recordingDuration={state.recordingDuration}
+              durationPresets={RECORDING_DURATION_PRESETS}
+              onDurationChange={handleDurationChange}
             />
           )}
         </main>
