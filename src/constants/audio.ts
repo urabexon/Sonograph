@@ -62,3 +62,30 @@ export const STEREO_DETECTION_THRESHOLD = 0.005;
 
 // Fraction of samples that must differ to consider input stereo
 export const STEREO_DIFF_RATIO = 50;
+
+// ============================================================================
+// Metronome Constants
+// ============================================================================
+
+export const BPM_MIN = 20;
+export const BPM_MAX = 999;
+export const BPM_DEFAULT = 120;
+
+// Beats per measure; the first beat of each measure is accented.
+export const METRONOME_BEATS_PER_MEASURE = 4;
+export const METRONOME_SCHEDULE_AHEAD_TIME = 0.1; // seconds
+export const METRONOME_SCHEDULER_INTERVAL = 25; // milliseconds
+
+// Click tone: a short 1000Hz sine with a fast attack and exponential decay
+export const METRONOME_CLICK_FREQUENCY = 1000; // Hz
+export const METRONOME_CLICK_ATTACK = 0.001; // seconds
+export const METRONOME_CLICK_DECAY = 0.05; // seconds
+
+// Volume range shared by audio tools (0 = silent, 1 = full scale)
+export const VOLUME_MIN = 0;
+export const VOLUME_MAX = 1;
+export const VOLUME_DEFAULT_METRONOME = 0.5;
+export const VOLUME_DEFAULT_REFERENCE = 0.3;
+
+// Fade applied when starting/stopping the reference tone to avoid click/pop
+export const REFERENCE_FADE_SECONDS = 0.05;

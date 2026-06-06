@@ -109,6 +109,27 @@
     "downloadStarted": "ダウンロードを開始しました",
     "downloadError": "ダウンロードに失敗しました"
   },
+  "metronome": {
+    "title": "メトロノーム",
+    "bpm": "BPM",
+    "volume": "音量",
+    "start": "開始",
+    "stop": "停止"
+  },
+  "reference": {
+    "title": "基準音",
+    "frequency": "周波数",
+    "volume": "音量",
+    "start": "開始",
+    "stop": "停止",
+    "waveform": {
+      "label": "波形",
+      "sine": "サイン波",
+      "square": "矩形波",
+      "sawtooth": "のこぎり波",
+      "triangle": "三角波"
+    }
+  },
   "start": {
     "instruction": "マイクを起動して開始します",
     "button": "開始",

@@ -109,6 +109,27 @@
     "downloadStarted": "Téléchargement démarré",
     "downloadError": "Échec du téléchargement"
   },
+  "metronome": {
+    "title": "Métronome",
+    "bpm": "BPM",
+    "volume": "Volume",
+    "start": "Démarrer",
+    "stop": "Arrêter"
+  },
+  "reference": {
+    "title": "Note de référence",
+    "frequency": "Fréquence",
+    "volume": "Volume",
+    "start": "Démarrer",
+    "stop": "Arrêter",
+    "waveform": {
+      "label": "Forme d'onde",
+      "sine": "Sinusoïdale",
+      "square": "Carrée",
+      "sawtooth": "Dent de scie",
+      "triangle": "Triangulaire"
+    }
+  },
   "start": {
     "instruction": "Démarrez votre microphone pour commencer",
     "button": "Démarrer",

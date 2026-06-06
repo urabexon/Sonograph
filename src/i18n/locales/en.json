@@ -109,6 +109,27 @@
     "downloadStarted": "Download started",
     "downloadError": "Download failed"
   },
+  "metronome": {
+    "title": "Metronome",
+    "bpm": "BPM",
+    "volume": "Volume",
+    "start": "Start",
+    "stop": "Stop"
+  },
+  "reference": {
+    "title": "Reference tone",
+    "frequency": "Frequency",
+    "volume": "Volume",
+    "start": "Start",
+    "stop": "Stop",
+    "waveform": {
+      "label": "Waveform",
+      "sine": "Sine",
+      "square": "Square",
+      "sawtooth": "Sawtooth",
+      "triangle": "Triangle"
+    }
+  },
   "start": {
     "instruction": "Start your microphone to begin",
     "button": "Start",
