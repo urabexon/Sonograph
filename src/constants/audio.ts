@@ -85,3 +85,7 @@ export const METRONOME_CLICK_DECAY = 0.05; // seconds
 export const VOLUME_MIN = 0;
 export const VOLUME_MAX = 1;
 export const VOLUME_DEFAULT_METRONOME = 0.5;
+export const VOLUME_DEFAULT_REFERENCE = 0.3;
+
+// Fade applied when starting/stopping the reference tone to avoid click/pop
+export const REFERENCE_FADE_SECONDS = 0.05;
