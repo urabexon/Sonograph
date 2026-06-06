@@ -6,6 +6,7 @@ import { ControlPanel } from "@/components/ControlPanel";
 import { Header } from "@/components/Header";
 import { MetronomeControls } from "@/components/MetronomeControls";
 import { PitchInfo } from "@/components/PitchInfo";
+import { ReferenceToneControls } from "@/components/ReferenceToneControls";
 import { RecordingList } from "@/components/RecordingList";
 import { SettingsDialog } from "@/components/SettingsDialog";
 import { StartOverlay } from "@/components/StartOverlay";
@@ -230,6 +231,9 @@ function App() {
             />
           )}
           <MetronomeControls />
+          <ReferenceToneControls
+            initialFrequency={state.advanced.referenceFrequency}
+          />
         </main>
       </div>
       <Toaster position="bottom-center" />
