@@ -75,3 +75,13 @@ export const BPM_DEFAULT = 120;
 export const METRONOME_BEATS_PER_MEASURE = 4;
 export const METRONOME_SCHEDULE_AHEAD_TIME = 0.1; // seconds
 export const METRONOME_SCHEDULER_INTERVAL = 25; // milliseconds
+
+// Click tone: a short 1000Hz sine with a fast attack and exponential decay
+export const METRONOME_CLICK_FREQUENCY = 1000; // Hz
+export const METRONOME_CLICK_ATTACK = 0.001; // seconds
+export const METRONOME_CLICK_DECAY = 0.05; // seconds
+
+// Volume range shared by audio tools (0 = silent, 1 = full scale)
+export const VOLUME_MIN = 0;
+export const VOLUME_MAX = 1;
+export const VOLUME_DEFAULT_METRONOME = 0.5;
