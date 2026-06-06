@@ -2,6 +2,7 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { AboutDialog } from "@/components/AboutDialog";
 import { ControlPanel } from "@/components/ControlPanel";
 import { Header } from "@/components/Header";
 import { MetronomeControls } from "@/components/MetronomeControls";
@@ -78,6 +79,7 @@ function App() {
 
   const { devices, isLoading, error, refreshDevices } = useMicrophoneDevices();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const [recordingsOpen, setRecordingsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [userPickedDeviceId, setUserPickedDeviceId] = useState("");
@@ -179,11 +181,13 @@ function App() {
         <Header
           onOpenSettings={() => setSettingsOpen(true)}
           onOpenRecordings={handleOpenRecordings}
+          onOpenAbout={() => setAboutOpen(true)}
         />
         <SettingsDialog
           open={settingsOpen}
           onClose={() => setSettingsOpen(false)}
         />
+        <AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} />
         <RecordingList
           open={recordingsOpen}
           onClose={() => setRecordingsOpen(false)}
