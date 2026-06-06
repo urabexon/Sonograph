@@ -22,6 +22,24 @@
     "about": "À propos",
     "theme": "Thème"
   },
+  "about": {
+    "title": "À propos de Sonograph",
+    "tagline": "Un accordeur pour ajuster la justesse de votre instrument ou de votre voix",
+    "overview": "Jouez ou chantez dans le microphone : Sonograph affiche la hauteur actuelle et l'écart vers le haut ou le bas, en temps réel.",
+    "featuresTitle": "Ce que vous pouvez faire",
+    "features": {
+      "display": "Voir votre justesse en direct (vert quand c'est juste)",
+      "adjust": "Adapter à votre instrument (transposition, diapason, do-ré-mi ou C-D-E)",
+      "record": "Enregistrer votre jeu pour le réécouter ou le télécharger",
+      "practice": "Vous exercer avec le métronome et la note de référence"
+    },
+    "howToTitle": "Utilisation",
+    "howTo": {
+      "allow": "Autorisez l'accès à votre microphone",
+      "play": "Jouez ou chantez — votre justesse s'affiche",
+      "adjust": "Ajustez les paramètres selon votre instrument et vos préférences"
+    }
+  },
   "settings": {
     "title": "Paramètres",
     "notation": {
