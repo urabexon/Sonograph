@@ -22,6 +22,24 @@
     "about": "About",
     "theme": "Theme"
   },
+  "about": {
+    "title": "About Sonograph",
+    "tagline": "A tuner for matching the pitch of your instrument or voice",
+    "overview": "Play or sing into the microphone and Sonograph shows the current pitch and how far above or below it is, in real time.",
+    "featuresTitle": "What you can do",
+    "features": {
+      "display": "See your pitch right away (green when it's in tune)",
+      "adjust": "Match your instrument (transposition, reference pitch, do-re-mi or C-D-E)",
+      "record": "Record your playing to listen back or download",
+      "practice": "Practice with the metronome and reference tone"
+    },
+    "howToTitle": "How to use",
+    "howTo": {
+      "allow": "Allow access to your microphone",
+      "play": "Play or sing — your pitch appears",
+      "adjust": "Use settings to match your instrument and preferences"
+    }
+  },
   "settings": {
     "title": "Settings",
     "notation": {
