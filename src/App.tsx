@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { ControlPanel } from "@/components/ControlPanel";
 import { Header } from "@/components/Header";
+import { MetronomeControls } from "@/components/MetronomeControls";
 import { PitchInfo } from "@/components/PitchInfo";
 import { RecordingList } from "@/components/RecordingList";
 import { SettingsDialog } from "@/components/SettingsDialog";
@@ -228,6 +229,7 @@ function App() {
               onDurationChange={handleDurationChange}
             />
           )}
+          <MetronomeControls />
         </main>
       </div>
       <Toaster position="bottom-center" />
