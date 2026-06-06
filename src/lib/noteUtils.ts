@@ -1,4 +1,9 @@
-import type { Notation, Accidental, Temperament, Transposition } from "../types";
+import type {
+  Notation,
+  Accidental,
+  Temperament,
+  Transposition,
+} from "../types";
 import { TRANSPOSITION_SEMITONES } from "../types";
 
 const LETTER_NOTES_SHARP = [
@@ -61,8 +66,43 @@ const SOLFEGE_NOTES_FLAT = [
   "シ",
 ] as const;
 
-// Just intonation ratios relative to C (C Major scale)
-// Each note's ratio from C, used to calculate the just intonation frequency offset
+// Latin/Romance solfège (Do Re Mi) for non-Japanese locales
+const SOLFEGE_LATIN_SHARP = [
+  "Do",
+  "Do♯",
+  "Re",
+  "Re♯",
+  "Mi",
+  "Fa",
+  "Fa♯",
+  "Sol",
+  "Sol♯",
+  "La",
+  "La♯",
+  "Si",
+] as const;
+
+const SOLFEGE_LATIN_FLAT = [
+  "Do",
+  "Re♭",
+  "Re",
+  "Mi♭",
+  "Mi",
+  "Fa",
+  "Sol♭",
+  "Sol",
+  "La♭",
+  "La",
+  "Si♭",
+  "Si",
+] as const;
+
+export type SolfegeVariant = "katakana" | "latin";
+
+export function solfegeVariantForLanguage(language: string): SolfegeVariant {
+  return language.startsWith("ja") ? "katakana" : "latin";
+}
+
 const JUST_INTONATION_CENTS: readonly number[] = [
   0, // C (unison)
   111.73, // C#/Db (16/15 - minor second)
@@ -159,9 +199,13 @@ export function frequencyToOctave(
 export function getNoteNames(
   notation: Notation,
   accidental: Accidental,
+  solfegeVariant: SolfegeVariant = "katakana",
 ): readonly string[] {
   if (notation === "letter") {
     return accidental === "sharp" ? LETTER_NOTES_SHARP : LETTER_NOTES_FLAT;
+  }
+  if (solfegeVariant === "latin") {
+    return accidental === "sharp" ? SOLFEGE_LATIN_SHARP : SOLFEGE_LATIN_FLAT;
   }
   return accidental === "sharp" ? SOLFEGE_NOTES_SHARP : SOLFEGE_NOTES_FLAT;
 }
@@ -171,9 +215,10 @@ export function frequencyToNoteName(
   notation: Notation,
   accidental: Accidental,
   options?: TuningOptions,
+  solfegeVariant: SolfegeVariant = "katakana",
 ): string {
   const noteIndex = frequencyToNoteIndex(frequency, options);
-  const notes = getNoteNames(notation, accidental);
+  const notes = getNoteNames(notation, accidental, solfegeVariant);
   const octave = frequencyToOctave(frequency, options);
 
   return `${notes[noteIndex]}${octave}`;
@@ -184,8 +229,9 @@ export function getNoteNameWithoutOctave(
   notation: Notation,
   accidental: Accidental,
   options?: TuningOptions,
+  solfegeVariant: SolfegeVariant = "katakana",
 ): string {
   const noteIndex = frequencyToNoteIndex(frequency, options);
-  const notes = getNoteNames(notation, accidental);
+  const notes = getNoteNames(notation, accidental, solfegeVariant);
   return notes[noteIndex];
 }

@@ -1,6 +1,10 @@
 import { useMemo } from "react";
 
-import { frequencyToMidi, getNoteNames } from "@/lib/noteUtils";
+import {
+  frequencyToMidi,
+  getNoteNames,
+  type SolfegeVariant,
+} from "@/lib/noteUtils";
 import type { Accidental, Notation, PitchHistoryEntry } from "@/types";
 
 const DISPLAY_DURATION_MS = 10000;
@@ -19,6 +23,7 @@ type TunerDisplayProps = {
   readonly pitchHistory: readonly PitchHistoryEntry[];
   readonly notation?: Notation;
   readonly accidental?: Accidental;
+  readonly solfegeVariant?: SolfegeVariant;
   readonly now: number;
 };
 
@@ -69,7 +74,8 @@ function buildPitchPath(
     .map((point, i) => {
       const prev = points[i - 1];
       const isNewSegment =
-        i === 0 || (prev && point.timestamp - prev.timestamp > GAP_THRESHOLD_MS);
+        i === 0 ||
+        (prev && point.timestamp - prev.timestamp > GAP_THRESHOLD_MS);
       return `${isNewSegment ? "M" : "L"} ${point.x} ${point.y}`;
     })
     .join(" ");
@@ -78,12 +84,14 @@ function buildPitchPath(
 function GridLines({
   notation,
   accidental,
+  solfegeVariant,
 }: {
   readonly notation: Notation;
   readonly accidental: Accidental;
+  readonly solfegeVariant: SolfegeVariant;
 }) {
   const { lines, notes } = useMemo(() => {
-    const noteNames = getNoteNames(notation, accidental);
+    const noteNames = getNoteNames(notation, accidental, solfegeVariant);
     const gridLines: GridLine[] = [];
 
     for (let midi = MIN_MIDI; midi <= MAX_MIDI; midi++) {
@@ -103,7 +111,7 @@ function GridLines({
     }
 
     return { lines: gridLines, notes: noteNames };
-  }, [notation, accidental]);
+  }, [notation, accidental, solfegeVariant]);
 
   return (
     <g>
@@ -164,6 +172,7 @@ export function TunerDisplay({
   pitchHistory,
   notation = "letter",
   accidental = "sharp",
+  solfegeVariant = "katakana",
   now,
 }: TunerDisplayProps) {
   const pathD = buildPitchPath(pitchHistory, now);
@@ -184,7 +193,11 @@ export function TunerDisplay({
           </radialGradient>
         </defs>
 
-        <GridLines notation={notation} accidental={accidental} />
+        <GridLines
+          notation={notation}
+          accidental={accidental}
+          solfegeVariant={solfegeVariant}
+        />
 
         {/* Current time marker (right edge, dashed) */}
         <line

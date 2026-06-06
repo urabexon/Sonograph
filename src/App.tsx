@@ -27,10 +27,12 @@ import { useMicrophoneDevices } from "@/hooks/useMicrophoneDevices";
 import { useRecordingBuffer } from "@/hooks/useRecordingBuffer";
 import { useRecordingStorage } from "@/hooks/useRecordingStorage";
 import { useSettings } from "@/hooks/useSettings";
+import { solfegeVariantForLanguage } from "@/lib/noteUtils";
 
 const PitchInfoContainer = memo(function PitchInfoContainer() {
   const { currentPitch } = usePitchData();
   const { state } = useSettings();
+  const { i18n } = useTranslation();
   return (
     <PitchInfo
       pitch={currentPitch}
@@ -38,6 +40,7 @@ const PitchInfoContainer = memo(function PitchInfoContainer() {
       accidental={state.accidental}
       tuningOptions={state.advanced}
       centThreshold={state.advanced.centThreshold}
+      solfegeVariant={solfegeVariantForLanguage(i18n.language)}
     />
   );
 });
@@ -50,12 +53,14 @@ const VolumeLevelContainer = memo(function VolumeLevelContainer() {
 const TunerDisplayContainer = memo(function TunerDisplayContainer() {
   const { pitchHistory, timestamp } = usePitchData();
   const { state } = useSettings();
+  const { i18n } = useTranslation();
   return (
     <TunerDisplay
       pitchHistory={pitchHistory}
       now={timestamp}
       notation={state.notation}
       accidental={state.accidental}
+      solfegeVariant={solfegeVariantForLanguage(i18n.language)}
     />
   );
 });

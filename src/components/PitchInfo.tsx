@@ -5,6 +5,7 @@ import {
   frequencyToCents,
   frequencyToOctave,
   getNoteNameWithoutOctave,
+  type SolfegeVariant,
   type TuningOptions,
 } from "@/lib/noteUtils";
 import type { Accidental, Notation, PitchData } from "@/types";
@@ -15,6 +16,7 @@ type PitchInfoProps = {
   readonly accidental?: Accidental;
   readonly tuningOptions?: TuningOptions;
   readonly centThreshold?: number;
+  readonly solfegeVariant?: SolfegeVariant;
 };
 
 export function PitchInfo({
@@ -23,6 +25,7 @@ export function PitchInfo({
   accidental = "sharp",
   tuningOptions,
   centThreshold = 5,
+  solfegeVariant = "katakana",
 }: PitchInfoProps) {
   const options = useMemo<TuningOptions>(
     () => tuningOptions ?? {},
@@ -33,7 +36,13 @@ export function PitchInfo({
   const frequency = pitch.frequency ?? 0;
   const cents = hasFrequency ? frequencyToCents(frequency, options) : 0;
   const noteName = hasFrequency
-    ? getNoteNameWithoutOctave(frequency, notation, accidental, options)
+    ? getNoteNameWithoutOctave(
+        frequency,
+        notation,
+        accidental,
+        options,
+        solfegeVariant,
+      )
     : "--";
   const octave = hasFrequency ? frequencyToOctave(frequency, options) : "";
 
