@@ -8,6 +8,7 @@ import {
   getNoteNames,
   frequencyToNoteName,
   getNoteNameWithoutOctave,
+  solfegeVariantForLanguage,
 } from "./noteUtils";
 
 describe("frequencyToMidi", () => {
@@ -129,6 +130,39 @@ describe("getNoteNames", () => {
   it("returns flat solfege names for solfege + flat", () => {
     const names = getNoteNames("solfege", "flat");
     expect(names[1]).toBe("レ♭");
+  });
+
+  it("defaults solfege to katakana when no variant is given", () => {
+    expect(getNoteNames("solfege", "sharp")[9]).toBe("ラ");
+  });
+
+  it("returns latin solfege names for the latin variant", () => {
+    const sharp = getNoteNames("solfege", "sharp", "latin");
+    expect(sharp[0]).toBe("Do");
+    expect(sharp[9]).toBe("La");
+    const flat = getNoteNames("solfege", "flat", "latin");
+    expect(flat[1]).toBe("Re♭");
+  });
+
+  it("ignores the variant for letter notation", () => {
+    expect(getNoteNames("letter", "sharp", "latin")[0]).toBe("C");
+  });
+});
+
+describe("solfegeVariantForLanguage", () => {
+  it("uses katakana for Japanese and latin otherwise", () => {
+    expect(solfegeVariantForLanguage("ja")).toBe("katakana");
+    expect(solfegeVariantForLanguage("ja-JP")).toBe("katakana");
+    expect(solfegeVariantForLanguage("en")).toBe("latin");
+    expect(solfegeVariantForLanguage("fr")).toBe("latin");
+  });
+});
+
+describe("frequencyToNoteName (latin solfege)", () => {
+  it("renders 440Hz as La4 in latin solfege", () => {
+    expect(
+      frequencyToNoteName(440, "solfege", "sharp", undefined, "latin"),
+    ).toBe("La4");
   });
 });
 
