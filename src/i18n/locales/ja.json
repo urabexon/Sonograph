@@ -109,6 +109,13 @@
     "downloadStarted": "ダウンロードを開始しました",
     "downloadError": "ダウンロードに失敗しました"
   },
+  "metronome": {
+    "title": "メトロノーム",
+    "bpm": "BPM",
+    "volume": "音量",
+    "start": "開始",
+    "stop": "停止"
+  },
   "start": {
     "instruction": "マイクを起動して開始します",
     "button": "開始",

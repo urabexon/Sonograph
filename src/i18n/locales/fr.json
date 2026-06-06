@@ -109,6 +109,13 @@
     "downloadStarted": "Téléchargement démarré",
     "downloadError": "Échec du téléchargement"
   },
+  "metronome": {
+    "title": "Métronome",
+    "bpm": "BPM",
+    "volume": "Volume",
+    "start": "Démarrer",
+    "stop": "Arrêter"
+  },
   "start": {
     "instruction": "Démarrez votre microphone pour commencer",
     "button": "Démarrer",
