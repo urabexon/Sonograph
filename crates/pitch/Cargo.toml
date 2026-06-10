@@ -1,0 +1,17 @@
+[package]
+name = "pitch"
+version = "0.1.0"
+edition = "2021"
+description = "YIN pitch detection compiled to WebAssembly"
+
+[lib]
+# cdylib for the wasm output, rlib so `cargo test` can link the crate natively.
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
