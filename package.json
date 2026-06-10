@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:wasm": "cd crates/pitch && wasm-pack build --target web --out-dir ../../src/wasm --out-name pitch && rm -f ../../src/wasm/.gitignore",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
