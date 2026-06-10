@@ -1,0 +1,16 @@
+{
+  "name": "pitch",
+  "type": "module",
+  "description": "YIN pitch detection compiled to WebAssembly",
+  "version": "0.1.0",
+  "files": [
+    "pitch_bg.wasm",
+    "pitch.js",
+    "pitch.d.ts"
+  ],
+  "main": "pitch.js",
+  "types": "pitch.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
