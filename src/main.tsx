@@ -4,7 +4,10 @@ import "./index.css";
 import "./i18n";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SettingsProvider } from "@/hooks/useSettings";
+import { initPitchEngine } from "@/utils/pitchEngine";
 import App from "./App.tsx";
+
+void initPitchEngine();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
