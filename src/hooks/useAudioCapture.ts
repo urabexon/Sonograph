@@ -1,9 +1,5 @@
 import { useCallback, useEffect, useSyncExternalStore } from "react";
-import type {
-  PitchData,
-  PitchHistoryEntry,
-  VolumeLevelData,
-} from "../types";
+import type { PitchData, PitchHistoryEntry, VolumeLevelData } from "../types";
 import {
   AUDIO_BUFFER_SIZE,
   ANALYSER_SMOOTHING_PITCH,
@@ -14,8 +10,8 @@ import {
   PITCH_TIMEOUT_MS,
   STEREO_CHECK_FRAMES,
 } from "../constants/audio";
-import { detectPitchJS, getRMS } from "../lib/pitchDetection";
 import { calculateChannelVolume, checkIsStereo } from "../lib/volumeUtils";
+import { detectPitch, getRMS } from "@/utils/pitchEngine";
 
 // ============================================================================
 // State
@@ -181,7 +177,7 @@ function processAudio(): void {
   // Detect pitch only when signal energy passes the noise gate.
   const rms = getRMS(monoData);
   if (rms >= noiseGateThreshold) {
-    const frequency = detectPitchJS(monoData, state.sampleRate);
+    const frequency = detectPitch(monoData, state.sampleRate);
     if (frequency > 0) {
       pitchHistory = [...pitchHistory, { frequency, timestamp: now }];
     }
